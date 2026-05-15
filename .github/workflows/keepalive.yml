@@ -1,0 +1,24 @@
+name: Database keepalive
+
+on:
+  schedule:
+    - cron: "17 9 */3 * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Uni-App keepalive endpoint
+        env:
+          KEEPALIVE_URL: ${{ secrets.KEEPALIVE_URL }}
+          KEEPALIVE_SECRET: ${{ secrets.KEEPALIVE_SECRET }}
+        run: |
+          if [ -z "$KEEPALIVE_URL" ]; then
+            echo "KEEPALIVE_URL secret is not configured"
+            exit 1
+          fi
+
+          curl --fail --show-error --silent \
+            --header "X-Keepalive-Secret: $KEEPALIVE_SECRET" \
+            "$KEEPALIVE_URL/api/keepalive"

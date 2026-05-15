@@ -88,6 +88,30 @@ class DatabaseService:
     def is_available(cls) -> bool:
         """Check if Supabase is configured and available"""
         return SUPABASE_AVAILABLE and cls.get_client() is not None
+
+    @classmethod
+    def keepalive(cls) -> dict:
+        """
+        Perform a tiny read against Supabase to keep the project active.
+
+        The query intentionally does not depend on user data being visible. With
+        RLS enabled, an anonymous client may receive an empty result, but the
+        database still handles the request.
+        """
+        client = cls.get_client()
+        if not client:
+            return {'ok': False, 'error': 'Database not configured'}
+
+        try:
+            response = client.table('pensums').select('id').limit(1).execute()
+            rows = response.data or []
+            return {
+                'ok': True,
+                'checked_table': 'pensums',
+                'rows_seen': len(rows)
+            }
+        except Exception as e:
+            return {'ok': False, 'error': str(e)}
     
     # ==================== Auth Methods ====================
     
@@ -341,7 +365,7 @@ class DatabaseService:
             return {'error': str(e)}
     
     @classmethod
-    def get_pensum(cls, user_id: str) -> dict:
+    def get_pensum(cls, user_id: str, access_token: str = None) -> dict:
         """
         Get user's pensum from database
         
@@ -351,17 +375,21 @@ class DatabaseService:
         Returns:
             Pensum data or error
         """
-        client = cls.get_client()
+        client = cls.get_authenticated_client(access_token) if access_token else cls.get_client()
         if not client:
             return {'error': 'Database not configured'}
         
         try:
             response = client.table('pensums').select('*').eq('user_id', user_id).single().execute()
-            return {'data': response.data.get('data') if response.data else None}
+            row = response.data or {}
+            return {
+                'data': row.get('data'),
+                'updated_at': str(row.get('updated_at')) if row.get('updated_at') else None
+            }
         except Exception as e:
             # No data found is not an error
             if 'No rows' in str(e):
-                return {'data': None}
+                return {'data': None, 'updated_at': None}
             return {'error': str(e)}
     
     @classmethod
@@ -383,18 +411,22 @@ class DatabaseService:
             return {'error': str(e)}
     
     @classmethod
-    def get_clases(cls, user_id: str) -> dict:
+    def get_clases(cls, user_id: str, access_token: str = None) -> dict:
         """Get user's classes from database"""
-        client = cls.get_client()
+        client = cls.get_authenticated_client(access_token) if access_token else cls.get_client()
         if not client:
             return {'error': 'Database not configured'}
         
         try:
             response = client.table('clases').select('*').eq('user_id', user_id).single().execute()
-            return {'data': response.data.get('data') if response.data else None}
+            row = response.data or {}
+            return {
+                'data': row.get('data'),
+                'updated_at': str(row.get('updated_at')) if row.get('updated_at') else None
+            }
         except Exception as e:
             if 'No rows' in str(e):
-                return {'data': None}
+                return {'data': None, 'updated_at': None}
             return {'error': str(e)}
     
     @classmethod
@@ -416,18 +448,22 @@ class DatabaseService:
             return {'error': str(e)}
     
     @classmethod
-    def get_configuracion(cls, user_id: str) -> dict:
+    def get_configuracion(cls, user_id: str, access_token: str = None) -> dict:
         """Get user's configuration from database"""
-        client = cls.get_client()
+        client = cls.get_authenticated_client(access_token) if access_token else cls.get_client()
         if not client:
             return {'error': 'Database not configured'}
         
         try:
             response = client.table('configuraciones').select('*').eq('user_id', user_id).single().execute()
-            return {'data': response.data.get('data') if response.data else None}
+            row = response.data or {}
+            return {
+                'data': row.get('data'),
+                'updated_at': str(row.get('updated_at')) if row.get('updated_at') else None
+            }
         except Exception as e:
             if 'No rows' in str(e):
-                return {'data': None}
+                return {'data': None, 'updated_at': None}
             return {'error': str(e)}
     
     @classmethod
@@ -449,18 +485,22 @@ class DatabaseService:
             return {'error': str(e)}
     
     @classmethod
-    def get_calificaciones(cls, user_id: str) -> dict:
+    def get_calificaciones(cls, user_id: str, access_token: str = None) -> dict:
         """Get user's grades from database"""
-        client = cls.get_client()
+        client = cls.get_authenticated_client(access_token) if access_token else cls.get_client()
         if not client:
             return {'error': 'Database not configured'}
         
         try:
             response = client.table('calificaciones').select('*').eq('user_id', user_id).single().execute()
-            return {'data': response.data.get('data') if response.data else None}
+            row = response.data or {}
+            return {
+                'data': row.get('data'),
+                'updated_at': str(row.get('updated_at')) if row.get('updated_at') else None
+            }
         except Exception as e:
             if 'No rows' in str(e):
-                return {'data': None}
+                return {'data': None, 'updated_at': None}
             return {'error': str(e)}
     
     @classmethod 
@@ -482,18 +522,22 @@ class DatabaseService:
             return {'error': str(e)}
     
     @classmethod
-    def get_franjas(cls, user_id: str) -> dict:
+    def get_franjas(cls, user_id: str, access_token: str = None) -> dict:
         """Get user's time slot preferences from database"""
-        client = cls.get_client()
+        client = cls.get_authenticated_client(access_token) if access_token else cls.get_client()
         if not client:
             return {'error': 'Database not configured'}
         
         try:
             response = client.table('franjas').select('*').eq('user_id', user_id).single().execute()
-            return {'data': response.data.get('data') if response.data else None}
+            row = response.data or {}
+            return {
+                'data': row.get('data'),
+                'updated_at': str(row.get('updated_at')) if row.get('updated_at') else None
+            }
         except Exception as e:
             if 'No rows' in str(e):
-                return {'data': None}
+                return {'data': None, 'updated_at': None}
             return {'error': str(e)}
     
     @classmethod
@@ -525,7 +569,8 @@ class DatabaseService:
             try:
                 response = client.table(table_name).upsert({
                     'user_id': user_id,
-                    'data': data_value
+                    'data': data_value,
+                    'updated_at': 'now()'
                 }, on_conflict='user_id').execute()
                 return {'success': True, 'data': response.data}
             except Exception as e:

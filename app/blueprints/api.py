@@ -2,6 +2,9 @@
 API Blueprint
 REST API endpoints for frontend communication
 """
+from datetime import datetime, timezone
+import os
+
 from flask import Blueprint, request, jsonify, Response
 from app.models.materia import Materia, MateriaStatus, Pensum
 from app.models.clase import Clase, BloqueHorario, DayOfWeek
@@ -17,6 +20,23 @@ api_bp = Blueprint('api', __name__)
 
 
 # ==================== Auth Endpoints ====================
+
+@api_bp.route('/keepalive', methods=['GET'])
+def keepalive():
+    """Lightweight database ping for scheduled keepalive jobs."""
+    expected_secret = os.environ.get('KEEPALIVE_SECRET', '').strip()
+    provided_secret = request.headers.get('X-Keepalive-Secret', '').strip() or request.args.get('secret', '').strip()
+
+    if expected_secret and provided_secret != expected_secret:
+        return jsonify({'ok': False, 'error': 'Unauthorized'}), 401
+
+    result = DatabaseService.keepalive()
+    status_code = 200 if result.get('ok') else 503
+
+    return jsonify({
+        **result,
+        'checked_at': datetime.now(timezone.utc).isoformat()
+    }), status_code
 
 @api_bp.route('/auth/signup', methods=['POST'])
 def signup():
@@ -152,27 +172,42 @@ def pull_data():
         return jsonify({'error': 'User ID required'}), 400
     
     data = {}
+    updated_at = {}
     
-    pensum_result = DatabaseService.get_pensum(user_id)
-    if pensum_result.get('data'):
+    pensum_result = DatabaseService.get_pensum(user_id, access_token)
+    if pensum_result.get('data') is not None:
         data['pensum'] = pensum_result['data']
+    if pensum_result.get('updated_at'):
+        updated_at['pensum'] = pensum_result['updated_at']
     
-    clases_result = DatabaseService.get_clases(user_id)
-    if clases_result.get('data'):
+    clases_result = DatabaseService.get_clases(user_id, access_token)
+    if clases_result.get('data') is not None:
         data['clases'] = clases_result['data']
+    if clases_result.get('updated_at'):
+        updated_at['clases'] = clases_result['updated_at']
     
-    config_result = DatabaseService.get_configuracion(user_id)
-    if config_result.get('data'):
+    config_result = DatabaseService.get_configuracion(user_id, access_token)
+    if config_result.get('data') is not None:
         data['configuracion'] = config_result['data']
+    if config_result.get('updated_at'):
+        updated_at['configuracion'] = config_result['updated_at']
     
-    calificaciones_result = DatabaseService.get_calificaciones(user_id)
-    if calificaciones_result.get('data'):
+    calificaciones_result = DatabaseService.get_calificaciones(user_id, access_token)
+    if calificaciones_result.get('data') is not None:
         data['calificaciones'] = calificaciones_result['data']
+    if calificaciones_result.get('updated_at'):
+        updated_at['calificaciones'] = calificaciones_result['updated_at']
     
-    franjas_result = DatabaseService.get_franjas(user_id)
-    if franjas_result.get('data'):
+    franjas_result = DatabaseService.get_franjas(user_id, access_token)
+    if franjas_result.get('data') is not None:
         data['franjas'] = franjas_result['data']
-    
+    if franjas_result.get('updated_at'):
+        updated_at['franjas'] = franjas_result['updated_at']
+
+    if updated_at:
+        data['_updated_at'] = updated_at
+        data['_latest_updated_at'] = max(updated_at.values())
+
     return jsonify({'data': data})
 
 

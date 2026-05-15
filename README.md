@@ -79,6 +79,7 @@ Sistema de gestión académica universitaria para visualización de pensum, segu
 - **Funciona offline**: tus datos se guardan localmente
 - Crea una cuenta para sincronizar entre dispositivos
 - Refresh automático de tokens de sesión
+- Keepalive programado para mantener activo el proyecto de Supabase
 - Indicador de estado de conexión en tiempo real
 
 ### ♿ Accesibilidad
@@ -172,6 +173,14 @@ Sistema de gestión académica universitaria para visualización de pensum, segu
 1. Click en tu usuario (esquina superior derecha)
 2. Click en **Sincronizar**
 3. Tus datos se suben a la nube
+
+### 7. Configurar keepalive de Supabase
+
+1. En Vercel, agrega `KEEPALIVE_SECRET` como variable de entorno.
+2. En GitHub, crea estos repository secrets:
+   - `KEEPALIVE_URL`: URL pública de la app, por ejemplo `https://uni-app-eta.vercel.app`
+   - `KEEPALIVE_SECRET`: el mismo valor configurado en Vercel
+3. El workflow `.github/workflows/keepalive.yml` llamará `/api/keepalive` cada 3 días.
 
 ---
 

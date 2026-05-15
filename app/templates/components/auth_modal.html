@@ -97,6 +97,9 @@
 // Auth state
 let currentUser = null;
 let authSession = null;
+const SYNC_LOCAL_UPDATED_AT_KEY = 'uniapp_localUpdatedAt';
+const SYNC_LAST_CLOUD_SYNC_AT_KEY = 'uniapp_lastCloudSyncAt';
+const SYNC_PENDING_KEY = 'uniapp__pendingSync';
 
 // Auth modal functions
 function openAuthModal() {
@@ -509,6 +512,74 @@ function restorePlanData(syncMeta) {
     });
 }
 
+function parseDateMs(value) {
+    const parsed = value ? Date.parse(value) : NaN;
+    return Number.isNaN(parsed) ? null : parsed;
+}
+
+function getLatestCloudUpdatedAt(data) {
+    if (data?._latest_updated_at) return data._latest_updated_at;
+
+    const updatedAt = data?._updated_at || {};
+    const validDates = Object.values(updatedAt)
+        .map((value) => ({ value, ms: parseDateMs(value) }))
+        .filter((date) => date.ms !== null)
+        .sort((a, b) => b.ms - a.ms);
+
+    return validDates[0]?.value || null;
+}
+
+function hasMeaningfulLocalData() {
+    const syncMeta = buildSyncMetadata();
+    const hasPlanData = Object.values(syncMeta.planesData).some((planData) => {
+        return ['materias', 'clases', 'calificaciones'].some((key) => {
+            const value = planData?.[key];
+            return Array.isArray(value) && value.length > 0;
+        });
+    });
+    const franjas = getParsedLocal('uniapp_franjas', []);
+    const config = getParsedLocal('uniapp_configuracion', {});
+    const hasConfig = config && typeof config === 'object' && !Array.isArray(config) &&
+        Object.keys(config).some((key) => key !== '_sync_meta');
+
+    return hasPlanData || (Array.isArray(franjas) && franjas.length > 0) || hasConfig;
+}
+
+function markCloudSyncTimestamp(timestamp = null) {
+    const syncedAt = timestamp || new Date().toISOString();
+    localStorage.setItem(SYNC_LAST_CLOUD_SYNC_AT_KEY, syncedAt);
+    localStorage.setItem(SYNC_LOCAL_UPDATED_AT_KEY, syncedAt);
+    localStorage.removeItem(SYNC_PENDING_KEY);
+}
+
+function hasPendingLocalSync() {
+    const pendingSync = getParsedLocal(SYNC_PENDING_KEY, []);
+    return Array.isArray(pendingSync) && pendingSync.length > 0;
+}
+
+function shouldApplyCloudData(data, hasCloudData) {
+    if (!hasCloudData) return false;
+
+    const hasLocalData = hasMeaningfulLocalData();
+    if (!hasLocalData) return true;
+
+    const cloudUpdatedAt = getLatestCloudUpdatedAt(data);
+    const cloudMs = parseDateMs(cloudUpdatedAt);
+    const localMs = parseDateMs(localStorage.getItem(SYNC_LOCAL_UPDATED_AT_KEY)) ||
+        parseDateMs(localStorage.getItem(SYNC_LAST_CLOUD_SYNC_AT_KEY));
+
+    if (cloudMs && !localMs) {
+        return !hasPendingLocalSync();
+    }
+
+    if (!cloudMs) {
+        console.log('No hay timestamps suficientes para reemplazar datos locales automáticamente.');
+        return false;
+    }
+
+    return cloudMs > localMs + 1000;
+}
+
 // Sync local data to cloud
 async function syncToCloud() {
     if (!currentUser || !authSession) {
@@ -560,6 +631,8 @@ async function syncToCloud() {
         if (!response.ok || data.error) {
             throw new Error(data.error || 'Error al sincronizar');
         }
+
+        markCloudSyncTimestamp();
         
         if (typeof App !== 'undefined' && App.showAlert) {
             App.showAlert('Datos sincronizados ✓', 'success');
@@ -596,6 +669,7 @@ async function pullFromCloud() {
         
         const data = result.data || {};
         const syncMeta = data.configuracion?._sync_meta;
+        const cloudUpdatedAt = getLatestCloudUpdatedAt(data);
         
         // Check if cloud has data
         const hasCloudData = (Array.isArray(data.pensum) && data.pensum.length > 0) ||
@@ -603,37 +677,29 @@ async function pullFromCloud() {
             (Array.isArray(data.calificaciones) && data.calificaciones.length > 0) ||
             (data.configuracion && Object.keys(data.configuracion).length > 0) ||
             (Array.isArray(data.franjas) && data.franjas.length > 0) ||
+            (data._updated_at && Object.keys(data._updated_at).length > 0) ||
             hasSyncMetadata(syncMeta);
-        const hasLocalData = localStorage.getItem('uniapp_materias');
-        
-        if (hasCloudData && hasLocalData) {
-            // Ask user which data to keep
-            const useCloud = confirm('Se encontraron datos en la nube. ¿Deseas reemplazar tus datos locales con los de la nube?');
-            if (!useCloud) return;
-        }
+
+        if (!shouldApplyCloudData(data, hasCloudData)) return;
         
         if (hasCloudData) {
-            // Import cloud data - map backend names to frontend storage keys (prefix: uniapp_)
-            if (data.pensum) localStorage.setItem('uniapp_materias', JSON.stringify(data.pensum));
-            if (data.clases) localStorage.setItem('uniapp_clases', JSON.stringify(data.clases));
-            if (data.calificaciones) localStorage.setItem('uniapp_calificaciones', JSON.stringify(data.calificaciones));
-            if (data.configuracion) localStorage.setItem('uniapp_configuracion', JSON.stringify(data.configuracion));
-
             // Import cloud data for all plans if sync metadata is available
             if (hasSyncMetadata(syncMeta)) {
                 restorePlanData(syncMeta);
             } else {
-                if (data.pensum) localStorage.setItem('uniapp_materias', JSON.stringify(data.pensum));
-                if (data.clases) localStorage.setItem('uniapp_clases', JSON.stringify(data.clases));
-                if (data.calificaciones) localStorage.setItem('uniapp_calificaciones', JSON.stringify(data.calificaciones));
+                if ('pensum' in data) localStorage.setItem('uniapp_materias', JSON.stringify(data.pensum));
+                if ('clases' in data) localStorage.setItem('uniapp_clases', JSON.stringify(data.clases));
+                if ('calificaciones' in data) localStorage.setItem('uniapp_calificaciones', JSON.stringify(data.calificaciones));
             }
 
-            if (data.configuracion && typeof data.configuracion === 'object') {
+            if ('configuracion' in data && data.configuracion && typeof data.configuracion === 'object') {
                 const { _sync_meta, ...cleanConfig } = data.configuracion;
                 localStorage.setItem('uniapp_configuracion', JSON.stringify(cleanConfig));
             }
 
-            if (data.franjas) localStorage.setItem('uniapp_franjas', JSON.stringify(data.franjas));
+            if ('franjas' in data) localStorage.setItem('uniapp_franjas', JSON.stringify(data.franjas));
+
+            markCloudSyncTimestamp(cloudUpdatedAt);
             
             // Reload page to reflect changes
             window.location.reload();
@@ -648,6 +714,7 @@ async function pullFromCloud() {
 document.addEventListener('DOMContentLoaded', function() {
     if (loadAuthData()) {
         updateAuthUI(true, currentUser.email);
+        pullFromCloud();
     }
 });
 </script>
