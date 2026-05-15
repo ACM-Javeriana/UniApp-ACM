@@ -9,6 +9,8 @@ class StorageManager {
         this.supabase = null;
         this.userId = null;
         this.syncInProgress = false;
+        this.localUpdatedAtKey = this.prefix + 'localUpdatedAt';
+        this.lastCloudSyncAtKey = this.prefix + 'lastCloudSyncAt';
     }
 
     // ==================== LOCAL STORAGE ====================
@@ -63,6 +65,13 @@ class StorageManager {
             pendingSync.push(key);
             localStorage.setItem(this.prefix + '_pendingSync', JSON.stringify(pendingSync));
         }
+        if (this.shouldTrackLocalChange(key)) {
+            localStorage.setItem(this.localUpdatedAtKey, new Date().toISOString());
+        }
+    }
+
+    shouldTrackLocalChange(key) {
+        return !key.startsWith('_') && key !== 'lastCloudSyncAt' && key !== 'localUpdatedAt';
     }
 
     /**
@@ -527,6 +536,9 @@ class StorageManager {
 
             if (results.success) {
                 this.clearSyncMarkers();
+                const syncedAt = new Date().toISOString();
+                localStorage.setItem(this.lastCloudSyncAtKey, syncedAt);
+                localStorage.setItem(this.localUpdatedAtKey, syncedAt);
             }
         } catch (error) {
             results.success = false;
@@ -563,6 +575,12 @@ class StorageManager {
                     localStorage.setItem(this.prefix + row.data_type, JSON.stringify(row.data));
                     results.loaded.push(row.data_type);
                 }
+            }
+
+            if (results.loaded.length > 0) {
+                const syncedAt = new Date().toISOString();
+                localStorage.setItem(this.lastCloudSyncAtKey, syncedAt);
+                localStorage.setItem(this.localUpdatedAtKey, syncedAt);
             }
         } catch (error) {
             results.success = false;
