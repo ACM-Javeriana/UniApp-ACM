@@ -79,9 +79,9 @@
                                 <option value="V">Vie</option>
                                 <option value="S">Sáb</option>
                             </select>
-                            <input type="time" class="block-start text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="07:00">
+                            <input type="time" class="block-start text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="07:00" min="07:00" max="21:00" step="1800">
                             <span class="text-gray-400 dark:text-gray-500">-</span>
-                            <input type="time" class="block-end text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="09:00">
+                            <input type="time" class="block-end text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="09:00" min="07:00" max="21:00" step="1800">
                             <button type="button" onclick="removeTimeBlock(this)" class="text-red-400 hover:text-red-600">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -493,10 +493,122 @@
     const DAY_NAMES = { 'L': 'Lun', 'M': 'Mar', 'W': 'Mié', 'J': 'Jue', 'V': 'Vie', 'S': 'Sáb' };
     const HOURS = Array.from({length: 15}, (_, i) => i + 7); // 7am to 9pm
     const VALID_OPTIMIZATION_PRESETS = ['free-days', 'less-gaps', 'early-end', 'late-start'];
+    const CLASS_DAY_START_MINUTES = 7 * 60;
+    const CLASS_DAY_END_MINUTES = 21 * 60;
+    const DEFAULT_CLASS_DURATION_MINUTES = 2 * 60;
+    const MAX_CLASS_DURATION_MINUTES = 8 * 60;
+    const MIN_CLASS_DURATION_MINUTES = 30;
     
     // Helper function to format time blocks
     function formatBloques(bloques) {
         return bloques.map(b => DAY_NAMES[b.dia] + ' ' + b.hora_inicio + '-' + b.hora_fin).join(', ');
+    }
+
+    function timeToMinutes(value) {
+        if (!value || !/^\d{2}:\d{2}$/.test(value)) return null;
+        const [hours, minutes] = value.split(':').map(Number);
+        return hours * 60 + minutes;
+    }
+
+    function minutesToTime(minutes) {
+        const bounded = Math.max(0, Math.min(23 * 60 + 59, minutes));
+        const hours = Math.floor(bounded / 60);
+        const mins = bounded % 60;
+        return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    }
+
+    function clampClassStart(minutes) {
+        return Math.max(
+            CLASS_DAY_START_MINUTES,
+            Math.min(CLASS_DAY_END_MINUTES - MIN_CLASS_DURATION_MINUTES, minutes)
+        );
+    }
+
+    function clampClassEnd(minutes, startMinutes) {
+        const minEnd = startMinutes + MIN_CLASS_DURATION_MINUTES;
+        const maxEnd = Math.min(startMinutes + MAX_CLASS_DURATION_MINUTES, CLASS_DAY_END_MINUTES);
+        return Math.max(minEnd, Math.min(maxEnd, minutes));
+    }
+
+    function inferClassPeriod(minutes) {
+        if (minutes === null) return null;
+        const hour = Math.floor(minutes / 60);
+        // Ambiguous typed values like 2:00 or 6:30 are almost always afternoon classes here.
+        if (hour >= 1 && hour <= 6) {
+            return minutes + 12 * 60;
+        }
+        return minutes;
+    }
+
+    function normalizeTimeBlock(block, selectors, changedField = 'init') {
+        const startInput = block.querySelector(selectors.start);
+        const endInput = block.querySelector(selectors.end);
+        if (!startInput || !endInput) return null;
+
+        let startMinutes = inferClassPeriod(timeToMinutes(startInput.value));
+        let endMinutes = inferClassPeriod(timeToMinutes(endInput.value));
+
+        startMinutes = clampClassStart(startMinutes ?? CLASS_DAY_START_MINUTES);
+
+        let duration = parseInt(block.dataset.durationMinutes, 10);
+        if (!Number.isFinite(duration) || duration < MIN_CLASS_DURATION_MINUTES || duration > MAX_CLASS_DURATION_MINUTES) {
+            duration = DEFAULT_CLASS_DURATION_MINUTES;
+        }
+
+        if (changedField === 'start') {
+            endMinutes = startMinutes + duration;
+        } else if (endMinutes === null || endMinutes <= startMinutes) {
+            endMinutes = startMinutes + duration;
+        }
+
+        endMinutes = clampClassEnd(endMinutes, startMinutes);
+        duration = endMinutes - startMinutes;
+
+        startInput.value = minutesToTime(startMinutes);
+        endInput.value = minutesToTime(endMinutes);
+        block.dataset.durationMinutes = String(duration);
+
+        return {
+            start: startInput.value,
+            end: endInput.value,
+            duration
+        };
+    }
+
+    function setupTimeBlockControls(block, selectors) {
+        const startInput = block.querySelector(selectors.start);
+        const endInput = block.querySelector(selectors.end);
+        if (!startInput || !endInput) return;
+
+        [startInput, endInput].forEach(input => {
+            input.min = '07:00';
+            input.max = '21:00';
+            input.step = '1800';
+        });
+
+        normalizeTimeBlock(block, selectors);
+        startInput.addEventListener('change', () => normalizeTimeBlock(block, selectors, 'start'));
+        startInput.addEventListener('blur', () => normalizeTimeBlock(block, selectors, 'start'));
+        endInput.addEventListener('change', () => normalizeTimeBlock(block, selectors, 'end'));
+        endInput.addEventListener('blur', () => normalizeTimeBlock(block, selectors, 'end'));
+    }
+
+    function collectTimeBlocks(blockSelector, selectors) {
+        const timeBlocks = [];
+
+        for (const block of document.querySelectorAll(blockSelector)) {
+            const day = block.querySelector(selectors.day)?.value;
+            const normalized = normalizeTimeBlock(block, selectors, 'save');
+
+            if (!day || !normalized) continue;
+            timeBlocks.push({
+                dia: day,
+                hora_inicio: normalized.start,
+                hora_fin: normalized.end
+            });
+        }
+
+        return { blocks: timeBlocks };
     }
     
     // Helper functions for color manipulation
@@ -575,6 +687,13 @@
         document.getElementById('franja-form').addEventListener('submit', handleAddFranja);
         document.getElementById('ics-form').addEventListener('submit', handleICSExport);
         document.getElementById('edit-class-form').addEventListener('submit', handleEditClassSubmit);
+        document.querySelectorAll('.time-block').forEach(block => {
+            setupTimeBlockControls(block, {
+                day: '.block-day',
+                start: '.block-start',
+                end: '.block-end'
+            });
+        });
         
         renderOptimizationPresets();
         initializeSemesterSelection();
@@ -821,7 +940,7 @@
                 : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600';
             
             return `
-            <button type="button" onclick="sortSchedules('${p.id}', this)"
+            <button type="button" onclick="sortSchedules('${p.id}')"
                     class="px-3 py-1.5 text-xs font-medium rounded-full border ${classes}">
                 ${p.icon} ${p.label}
             </button>
@@ -844,16 +963,16 @@
         const section = document.getElementById('class-section').value;
         const professor = document.getElementById('class-professor').value;
         
-        // Gather time blocks
-        const timeBlocks = [];
-        document.querySelectorAll('.time-block').forEach(block => {
-            const day = block.querySelector('.block-day').value;
-            const start = block.querySelector('.block-start').value;
-            const end = block.querySelector('.block-end').value;
-            if (day && start && end) {
-                timeBlocks.push({ dia: day, hora_inicio: start, hora_fin: end });
-            }
+        const { blocks: timeBlocks, error } = collectTimeBlocks('.time-block', {
+            day: '.block-day',
+            start: '.block-start',
+            end: '.block-end'
         });
+
+        if (error) {
+            App.showAlert(error, 'error');
+            return;
+        }
         
         if (timeBlocks.length === 0) {
             App.showAlert('Agrega al menos un bloque de horario', 'error');
@@ -888,6 +1007,7 @@
         
         // Restore selected materia for quick adding of multiple sections
         materiaSelect.value = selectedMateria;
+        resetClassTimeBlocks();
         
         App.showAlert('Clase agregada', 'success');
     }
@@ -1117,9 +1237,9 @@
                 <option value="V" ${dia === 'V' ? 'selected' : ''}>Vie</option>
                 <option value="S" ${dia === 'S' ? 'selected' : ''}>Sáb</option>
             </select>
-            <input type="time" class="edit-block-start text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${inicio}">
+            <input type="time" class="edit-block-start text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${inicio}" min="07:00" max="21:00" step="1800">
             <span class="text-gray-400 dark:text-gray-500">-</span>
-            <input type="time" class="edit-block-end text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${fin}">
+            <input type="time" class="edit-block-end text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${fin}" min="07:00" max="21:00" step="1800">
             <button type="button" onclick="removeEditTimeBlock(this)" class="text-red-400 hover:text-red-600">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1127,6 +1247,11 @@
             </button>
         `;
         container.appendChild(block);
+        setupTimeBlockControls(block, {
+            day: '.edit-block-day',
+            start: '.edit-block-start',
+            end: '.edit-block-end'
+        });
     }
     
     function removeEditTimeBlock(btn) {
@@ -1142,16 +1267,16 @@
         const clase = registeredClasses.find(c => c.id === editingClassId);
         if (!clase) return;
         
-        // Gather time blocks
-        const timeBlocks = [];
-        document.querySelectorAll('.edit-time-block').forEach(block => {
-            const day = block.querySelector('.edit-block-day').value;
-            const start = block.querySelector('.edit-block-start').value;
-            const end = block.querySelector('.edit-block-end').value;
-            if (day && start && end) {
-                timeBlocks.push({ dia: day, hora_inicio: start, hora_fin: end });
-            }
+        const { blocks: timeBlocks, error } = collectTimeBlocks('.edit-time-block', {
+            day: '.edit-block-day',
+            start: '.edit-block-start',
+            end: '.edit-block-end'
         });
+
+        if (error) {
+            App.showAlert(error, 'error');
+            return;
+        }
         
         if (timeBlocks.length === 0) {
             App.showAlert('Agrega al menos un bloque de horario', 'error');
@@ -1193,9 +1318,9 @@
                 <option value="V">Vie</option>
                 <option value="S">Sáb</option>
             </select>
-            <input type="time" class="block-start text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${startTime}">
+            <input type="time" class="block-start text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${startTime}" min="07:00" max="21:00" step="1800">
             <span class="text-gray-400 dark:text-gray-500">-</span>
-            <input type="time" class="block-end text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${endTime}">
+            <input type="time" class="block-end text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded focus:ring-accent-500 transition-colors" value="${endTime}" min="07:00" max="21:00" step="1800">
             <button type="button" onclick="removeTimeBlock(this)" class="text-red-400 hover:text-red-600">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -1203,6 +1328,34 @@
             </button>
         `;
         container.appendChild(block);
+        setupTimeBlockControls(block, {
+            day: '.block-day',
+            start: '.block-start',
+            end: '.block-end'
+        });
+    }
+
+    function resetClassTimeBlocks() {
+        const container = document.getElementById('time-blocks-container');
+        const blocks = Array.from(container.querySelectorAll('.time-block'));
+        const firstBlock = blocks[0];
+
+        blocks.slice(1).forEach(block => block.remove());
+
+        if (!firstBlock) {
+            addTimeBlock();
+            return;
+        }
+
+        firstBlock.querySelector('.block-day').value = 'L';
+        firstBlock.querySelector('.block-start').value = '07:00';
+        firstBlock.querySelector('.block-end').value = '09:00';
+        firstBlock.dataset.durationMinutes = String(DEFAULT_CLASS_DURATION_MINUTES);
+        normalizeTimeBlock(firstBlock, {
+            day: '.block-day',
+            start: '.block-start',
+            end: '.block-end'
+        });
     }
     
     function removeTimeBlock(btn) {
@@ -1346,7 +1499,7 @@
         generatedSchedules = allCombinations.filter(combo => !hasConflict(combo));
         
         // Sort by optimization criteria
-        sortSchedules(selectedOptimizationPreset);
+        sortSchedules(selectedOptimizationPreset, { render: false, persistSettings: false });
         
         currentScheduleIndex = 0;
         
@@ -1443,29 +1596,55 @@
         }));
     }
 
-    function sortSchedules(criteria, buttonEl) {
+    function getOptimizationScore(metrics, criteria) {
+        const earliestStart = metrics.earliestStartMinutes;
+        const latestEnd = metrics.latestEndMinutes;
+        const totalGap = metrics.totalGapMinutes;
+
+        switch (criteria) {
+            case 'free-days':
+                return [-metrics.freeDays, totalGap, latestEnd, -earliestStart];
+            case 'less-gaps':
+                return [metrics.gaps, totalGap, -metrics.freeDays, latestEnd, -earliestStart];
+            case 'early-end':
+                return [latestEnd, totalGap, -metrics.freeDays, -earliestStart];
+            case 'late-start':
+                return [-earliestStart, totalGap, latestEnd, -metrics.freeDays];
+            default:
+                return [-metrics.freeDays, totalGap, latestEnd, -earliestStart];
+        }
+    }
+
+    function compareOptimizationScores(scoreA, scoreB) {
+        for (let i = 0; i < Math.max(scoreA.length, scoreB.length); i++) {
+            const valueA = scoreA[i] ?? 0;
+            const valueB = scoreB[i] ?? 0;
+            if (valueA !== valueB) {
+                return valueA - valueB;
+            }
+        }
+        return 0;
+    }
+
+    function sortSchedules(criteria, options = {}) {
+        const shouldRender = options.render !== false;
+        const shouldPersist = options.persistSettings !== false;
         selectedOptimizationPreset = VALID_OPTIMIZATION_PRESETS.includes(criteria) ? criteria : 'free-days';
         renderOptimizationPresets();
         
         generatedSchedules.sort((a, b) => {
             const metricsA = calculateMetrics(a);
             const metricsB = calculateMetrics(b);
-            
-            switch (selectedOptimizationPreset) {
-                case 'free-days':
-                    return metricsB.freeDays - metricsA.freeDays;
-                case 'less-gaps':
-                    return metricsA.gaps - metricsB.gaps;
-                case 'early-end':
-                    return metricsA.latestEnd.localeCompare(metricsB.latestEnd);
-                case 'late-start':
-                    return metricsB.earliestStart.localeCompare(metricsA.earliestStart);
-                default:
-                    return 0;
-            }
+            const scoreA = getOptimizationScore(metricsA, selectedOptimizationPreset);
+            const scoreB = getOptimizationScore(metricsB, selectedOptimizationPreset);
+            return compareOptimizationScores(scoreA, scoreB);
         });
+
+        if (shouldPersist) {
+            persistCurrentGenerationSettings();
+        }
         
-        if (generatedSchedules.length > 0) {
+        if (shouldRender && generatedSchedules.length > 0) {
             currentScheduleIndex = 0;
             displaySchedule(0);
         }
@@ -1483,8 +1662,11 @@
         
         let freeDays = 0;
         let gaps = 0;
+        let totalGapMinutes = 0;
         let earliestStart = '23:59';
         let latestEnd = '00:00';
+        let earliestStartMinutes = 23 * 60 + 59;
+        let latestEndMinutes = 0;
         
         DAYS.forEach(day => {
             const blocks = dayBlocks[day].sort((a, b) => a.start.localeCompare(b.start));
@@ -1498,18 +1680,37 @@
                     const currStart = blocks[i].start;
                     if (prevEnd < currStart) {
                         gaps++;
+                        totalGapMinutes += timeToMinutes(currStart) - timeToMinutes(prevEnd);
                     }
                 }
                 
                 // Update earliest/latest
                 blocks.forEach(b => {
-                    if (b.start < earliestStart) earliestStart = b.start;
-                    if (b.end > latestEnd) latestEnd = b.end;
+                    const startMinutes = timeToMinutes(b.start);
+                    const endMinutes = timeToMinutes(b.end);
+
+                    if (startMinutes < earliestStartMinutes) {
+                        earliestStartMinutes = startMinutes;
+                        earliestStart = b.start;
+                    }
+
+                    if (endMinutes > latestEndMinutes) {
+                        latestEndMinutes = endMinutes;
+                        latestEnd = b.end;
+                    }
                 });
             }
         });
         
-        return { freeDays, gaps, earliestStart, latestEnd };
+        return {
+            freeDays,
+            gaps,
+            totalGapMinutes,
+            earliestStart,
+            latestEnd,
+            earliestStartMinutes,
+            latestEndMinutes
+        };
     }
     
     function displaySchedule(index) {
