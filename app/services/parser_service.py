@@ -194,7 +194,7 @@ class ParserService:
             "bloques": ParserService.time_parser(ParserService.extract_element_text(gb, ParserService.FIELD_BASE_IDS["days_times"], idx)),
 
             # Aditional information obtained 
-            "Unidad_academica": ParserService.clean_whitespace(subject),
+            "unidad_academica": ParserService.clean_whitespace(subject),
             "numero_unidad_academica": ParserService.clean_whitespace(number),
             "salon": ParserService.clean_salon_name(raw_salon),
             "estado": ParserService.clean_whitespace(raw_status)
@@ -227,6 +227,9 @@ class ParserService:
 
         groupboxes = soup.find_all(id=ParserService.GROUPBOX_PATTERN)
         for gb in groupboxes:
-            extracted_clases.extend(ParserService.parse_groupbox(gb))
-        
+            results = ParserService.parse_groupbox(gb)
+            mandatory_fields = {"codigo_materia", "nombre_materia", "bloques"}
+            for res in results:
+                if all(field in res and res[field] for field in mandatory_fields):
+                    extracted_clases.extend(results)
         return extracted_clases
