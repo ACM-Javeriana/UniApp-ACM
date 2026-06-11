@@ -248,4 +248,9 @@ class ParserService:
             for res in results:
                 if all(field in res and res[field] for field in mandatory_fields):
                     extracted_clases.extend(results)
-        return extracted_clases
+        
+        result_dict = {
+            "clases": extracted_clases
+        }
+
+        return result_dict

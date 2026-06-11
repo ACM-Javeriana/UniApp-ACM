@@ -39,9 +39,7 @@
       "seccion": "L1",
       "profesor": "Ing. Rodríguez",
       "creditos": 1,
-      "bloques": [
-        { "dia": "V", "hora_inicio": "14:00", "hora_fin": "17:00" }
-      ]
+      "bloques": [{ "dia": "V", "hora_inicio": "14:00", "hora_fin": "17:00" }]
     },
     {
       "codigo_materia": "PRG101",
