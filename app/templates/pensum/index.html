@@ -1159,6 +1159,36 @@
         <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-lg w-full p-4 sm:p-6 transition-colors">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Importar Pensum</h3>
             <div class="space-y-4">
+                <!-- Predefined Templates -->
+                <div>
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Plantillas Javeriana</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="loadPensumTemplate('ciencia_datos')"
+                                class="text-left p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20 transition-colors">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2 h-2 rounded-full bg-pink-500 flex-shrink-0"></span>
+                                <span class="text-sm font-medium text-gray-800 dark:text-gray-200 leading-tight">Ciencia de Datos</span>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">47 materias · 134 cr · 8 sem</span>
+                        </button>
+                        <button onclick="loadPensumTemplate('ingenieria_sistemas')"
+                                class="text-left p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-accent-400 hover:bg-accent-50 dark:hover:bg-accent-900/20 transition-colors">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="w-2 h-2 rounded-full bg-teal-500 flex-shrink-0"></span>
+                                <span class="text-sm font-medium text-gray-800 dark:text-gray-200 leading-tight">Ingeniería de Sistemas</span>
+                            </div>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">52 materias · 138 cr · 8 sem</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="relative flex items-center">
+                    <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+                    <span class="flex-shrink mx-3 text-xs text-gray-400 dark:text-gray-500">o sube tu propio archivo</span>
+                    <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+
                 <!-- Template Download -->
                 <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div class="flex items-center">
@@ -1167,7 +1197,7 @@
                         </svg>
                         <span class="text-sm text-blue-700">¿Primera vez? Descarga la plantilla</span>
                     </div>
-                    <a href="{{ url_for('static', filename='templates/pensum_template.json') }}" 
+                    <a href="{{ url_for('static', filename='templates/pensum_template.json') }}"
                        download="pensum_template.json"
                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-md hover:bg-blue-200">
                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1176,7 +1206,7 @@
                         Descargar plantilla
                     </a>
                 </div>
-                
+
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-5 sm:p-8 text-center">
                     <input type="file" id="import-file" accept=".json" class="hidden" onchange="handleImportFile(event)">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2336,6 +2366,22 @@
         importData = null;
     }
     
+    async function loadPensumTemplate(name) {
+        try {
+            const response = await fetch(`/static/templates/pensum_${name}.json`);
+            if (!response.ok) throw new Error('No se pudo cargar la plantilla');
+            importData = await response.json();
+            const count = importData.materias ? importData.materias.length : 0;
+            document.getElementById('import-preview-content').textContent = `${count} materias encontradas`;
+            document.getElementById('import-preview').classList.remove('hidden');
+            document.getElementById('import-confirm-btn').disabled = false;
+            document.getElementById('import-error').classList.add('hidden');
+        } catch (err) {
+            document.getElementById('import-error').textContent = 'Error al cargar la plantilla. Intenta de nuevo.';
+            document.getElementById('import-error').classList.remove('hidden');
+        }
+    }
+
     function exportPensum() {
         const data = {
             version: '1.0',
