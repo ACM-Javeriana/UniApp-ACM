@@ -1,0 +1,138 @@
+import re
+import io
+from typing import Optional
+
+def cicle_sort_key(cicle: str) -> tuple:
+    m= re.match(r'(Ter|Prim|Seg)Pe(\d{4})', cicle)
+    if not m:
+        return (9999, 0)
+    year= int(m.group(2))
+    period= {'Prim':1, 'Seg':2, 'Ter':3}.get(m.group(1), 9)
+    return (year, period)
+
+def build_cicle_semester_map(cicles:list) -> dict:
+    unique_sorted= sorted(set(cicles), key=cicle_sort_key)
+    return {c: i+1 for i, c in enumerate(unique_sorted)}
+
+def try_float(val:str)-> Optional[float]:
+    try:
+        return float(val)
+    except (ValueError,TypeError):
+        return None
+
+def parse_progress_report_pdf(pdf_bytes: bytes) -> dict:
+    try:
+        import pdfplumber
+    except ImportError:
+        return {'error': 'error in dependency pdfplumber'}
+
+    with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
+        last_page = pdf.pages[-1]
+        tables=last_page.extract_tables({
+            'vertical_strategy': 'lines',
+            'horizontal_strategy': 'lines',
+        })
+        raw_rows= []
+        if tables:
+            for table in tables:
+                for row in table:
+                    if not row:
+                        continue
+                    first = str(row[0] or '').strip()
+                    if first in ('Ciclo Lectivo', 'Ciclo', ''):
+                        continue
+                    raw_rows.append([str(c or '').strip() for c in row])
+
+        if not raw_rows:
+            text= last_page.extract_text() or ''
+            raw_rows = parse_from_text(text)
+    return build_output(raw_rows)
+
+def parse_from_text(text:str) -> list:
+    rows = []
+    for line in text.splitlines():
+        line=line.strip()
+        if not re.match(r'^(Ter|Prim|Seg)Pe\d{4}', line):
+            continue
+        tokens=line.split()
+        if len(tokens)<6:
+            continue
+
+        cicle=tokens[0]
+        dept=tokens[1]
+        cat= tokens[2]
+        course= tokens[3]
+        Type= tokens[-1]
+        cred= tokens[-2]
+
+        possible_grade= tokens[-3]
+        if re.match(r'^\d+\.\d+$', possible_grade):
+            grade_str= possible_grade
+            title_tokens= tokens[4:-3]
+        else:
+            grade_str= ''
+            title_tokens= tokens[4:-2]
+        
+        title=' '.join(title_tokens)
+
+        if not grade_str and title.endswith('A'):
+            grade_str= 'A'
+            title= title[:-1].strip()
+        rows.append([cicle, dept, cat, course, title, grade_str, cred, Type])
+    return rows
+
+def build_output(raw_rows:list) -> dict:
+    cicles=[r[0] for r in raw_rows if r and len(r) >=7]
+    cicles_map= build_cicle_semester_map(cicles)
+
+    subjects = []
+    grades = []
+    seen = set()
+
+    for row in raw_rows:
+        if len(row) <7:
+            continue
+        cicle,dept,cat,course,title,grade_str,cred_str=row[:7]
+        Type = row[7] if len(row) > 7 else ''
+
+        if not course or course in seen:
+            continue
+        cred = try_float(cred_str) or 0.0
+        if cred== 0.0:
+            continue
+
+        seen.add(course)
+        grade=try_float(grade_str)
+        semester= cicles_map.get(cicle,1)
+
+        if grade is None:
+            status = 'passed' if Type == 'Si' else 'pending'
+        elif grade >= 3.0:
+            status= 'passed'
+        else:
+            status = 'failed'
+
+        subjects.append ({
+            'codigo': course,
+            'nombre': title,
+            'creditos': int(cred),
+            'semestre': semester,
+            'prerrequisitos': [],
+            'correquisitos': [],
+            'estado': status,
+            'color': '#5091AF',
+            'tipo': Type,
+        })
+        if grade is not None:
+            grades.append({
+                'codigo_materia': course,
+                'nota': grade,
+                'componentes': [],
+                'fecha': None,
+            })
+    return {
+        'version': '1.0',
+        'source': 'informe_avance',
+        'materias': subjects,
+        'calificaciones': grades,
+    }

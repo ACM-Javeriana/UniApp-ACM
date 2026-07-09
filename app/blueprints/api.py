@@ -685,3 +685,24 @@ def parse_raw_classes():
         return jsonify(result)
     except Exception as e:
         return jsonify({'failed to parse raw HTML error: ': str(e)}), 400
+
+
+# Parser endpoints for progress report PDFs
+
+@api_bp.route('/import/progress-report', methods=['POST'])
+def import_progress_report():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No se recibió archivo'}), 400
+
+    file= request.files['file']
+    if not file.filename.lower().endswith('.pdf'):
+        return jsonify({'error': 'Archivo no es PDF'}), 400
+    
+    try:
+        from app.services.progress_report_parser import parse_progress_report_pdf
+        result=parse_progress_report_pdf(file.read())
+        if 'error' in result:
+            return jsonify(result), 500
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': f'Error al procesar el PDF: {str(e)}'}), 500
