@@ -801,6 +801,25 @@ const Schedule = {
      * Get color classes for a materia
      */
     getColorForMateria(codigo) {
+        const materia = storage.getMateria(codigo);
+        if (materia && materia.color && materia.color.startsWith('#')) {
+            const hex = materia.color.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const bgR = Math.round(r + (255 - r) * 0.85);
+            const bgG = Math.round(g + (255 - g) * 0.85);
+            const bgB = Math.round(b + (255 - b) * 0.85);
+            const darkBgR = Math.round(r * 0.3);
+            const darkBgG = Math.round(g * 0.3);
+            const darkBgB = Math.round(b * 0.3);
+            return {
+                bg: `bg-[rgb(${bgR},${bgG},${bgB})] dark:bg-[rgb(${darkBgR},${darkBgG},${darkBgB})]`,
+                border: `border-[${materia.color}]`,
+                text: `text-[${materia.color}]`
+            };
+        }
+
         const colors = [
             { bg: 'bg-blue-100', border: 'border-blue-500', text: 'text-blue-800' },
             { bg: 'bg-green-100', border: 'border-green-500', text: 'text-green-800' },

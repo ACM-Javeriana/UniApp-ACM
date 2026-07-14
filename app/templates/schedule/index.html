@@ -889,20 +889,37 @@
     function assignMateriaColors() {
         materiaColors = {};
         let colorIndex = 0;
+        const allMaterias = storage.getMaterias();
+        const materiaColorMap = {};
+        allMaterias.forEach(m => {
+            materiaColorMap[m.codigo] = m.color || null;
+        });
+        
         registeredClasses.forEach(c => {
             if (!materiaColors[c.codigo_materia]) {
-                materiaColors[c.codigo_materia] = COLORS[colorIndex % COLORS.length];
-                colorIndex++;
+                const customHex = materiaColorMap[c.codigo_materia];
+                if (customHex && customHex.startsWith('#')) {
+                    materiaColors[c.codigo_materia] = convertCustomColor(customHex);
+                    c.customColor = customHex;
+                } else {
+                    materiaColors[c.codigo_materia] = COLORS[colorIndex % COLORS.length];
+                    colorIndex++;
+                }
             }
-            // Update class color to match its materia
             c.color = materiaColors[c.codigo_materia];
         });
     }
     
     function getMateriaColor(codigoMateria) {
         if (!materiaColors[codigoMateria]) {
-            const colorIndex = Object.keys(materiaColors).length;
-            materiaColors[codigoMateria] = COLORS[colorIndex % COLORS.length];
+            const materia = storage.getMateria(codigoMateria);
+            const customHex = materia?.color;
+            if (customHex && customHex.startsWith('#')) {
+                materiaColors[codigoMateria] = convertCustomColor(customHex);
+            } else {
+                const colorIndex = Object.keys(materiaColors).length;
+                materiaColors[codigoMateria] = COLORS[colorIndex % COLORS.length];
+            }
         }
         return materiaColors[codigoMateria];
     }
