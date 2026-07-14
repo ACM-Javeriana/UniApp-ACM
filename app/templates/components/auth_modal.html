@@ -69,7 +69,7 @@
                     </label>
                     <input type="email" id="signup-email" name="email" required
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500"
-                           placeholder="tu@email.com">
+                           placeholder="tu@javeriana.edu.co">
                 </div>
                 <div>
                     <label for="signup-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -288,7 +288,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
     const password = document.getElementById('signup-password').value;
     const passwordConfirm = document.getElementById('signup-password-confirm').value;
     const submitBtn = this.querySelector('button[type="submit"]');
-    
+    const regexInstitucional = /^[a-zA-Z0-9._%+-]+@javeriana\.edu$/i;
     // Validate passwords match
     if (password !== passwordConfirm) {
         showError('signup', 'Las contraseñas no coinciden');
@@ -297,6 +297,11 @@ document.getElementById('signup-form').addEventListener('submit', async function
     
     if (password.length < 6) {
         showError('signup', 'La contraseña debe tener al menos 6 caracteres');
+        return;
+    }
+
+    if(!regexInstitucional.test(email)){
+        showError('signup','El correo asociado debe ser el de universidad')
         return;
     }
     
