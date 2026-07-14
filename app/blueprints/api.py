@@ -15,6 +15,8 @@ from app.services.gpa_service import GPAService
 from app.services.schedule_service import ScheduleService
 from app.services.export_service import ExportService
 from app.services.database import DatabaseService
+from app.services.parser_service import ParserService
+
 
 api_bp = Blueprint('api', __name__)
 
@@ -661,3 +663,46 @@ def calculate_course_grade():
         return jsonify(result)
     except Exception as e:
         return jsonify({'error': str(e)}), 400
+
+
+# ==================== Parser endpoints ====================
+
+@api_bp.route('/parser/parse', methods=['POST'])
+def parse_raw_classes():
+    """
+    Parse raw HTML data obtained from intranet
+    Needs to be provided as a string in the 'raw_html' field of the request body
+    """
+
+    data = request.get_json()
+    raw_html = data.get('raw_html')
+    
+    if not raw_html:
+        return jsonify({'error': 'raw_html required'}), 400
+    
+    try:
+        result = ParserService.parse_raw_data(raw_html)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'failed to parse raw HTML error: ': str(e)}), 400
+
+
+# Parser endpoints for progress report PDFs
+
+@api_bp.route('/import/progress-report', methods=['POST'])
+def import_progress_report():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No se recibió archivo'}), 400
+
+    file= request.files['file']
+    if not file.filename.lower().endswith('.pdf'):
+        return jsonify({'error': 'Archivo no es PDF'}), 400
+    
+    try:
+        from app.services.progress_report_parser import parse_progress_report_pdf
+        result=parse_progress_report_pdf(file.read())
+        if 'error' in result:
+            return jsonify(result), 500
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': f'Error al procesar el PDF: {str(e)}'}), 500

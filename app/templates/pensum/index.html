@@ -1372,6 +1372,26 @@
                         selecciona un archivo
                     </button>
                 </div>
+                <!--Importar desde informe de Avance-->
+                <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-center gap-2">
+                        <svg class= "w-5 h-5 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-purple-700 dark:text-purple-300">Importar desde un informe de avance</p>
+                            <p class="text-xs text-purple-500 dark:text-purple-400">Copia las materias y calificaciones desde informe de la javeriana.</p>
+                        </div>
+                    </div>
+                    <input type="file" id="progress-report-file" accept=".pdf" class="hidden" onchange="handleProgressReportImport(event)">
+                    <button onclick="document.getElementById('progress-report-file').click()"
+                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-100 dark:bg-purple-800 dark:text-purple-200">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                        Subir PDF
+                    </button>
+                </div>
                 <div id="import-preview" class="hidden">
                     <p class="text-sm text-gray-600 mb-2">Vista previa:</p>
                     <div class="bg-gray-50 rounded-lg p-3 max-h-40 overflow-y-auto">
@@ -2535,6 +2555,39 @@
         });
         
         App.showAlert(`Materia reprogramada para semestre ${nextSemester}`, 'info');
+    }
+
+    async function handleProgressReportImport(event){
+        const file= event.target.files[0];
+        if(!file) return;
+        event.target.value = '';
+
+        const formData= new FormData();
+        formData.append('file', file);
+
+        App.showAlert('Procesando informe de avance...', 'info');
+
+        try {
+            const response= await fetch('/api/import/progress-report', {
+                method: 'POST',
+                body: formData
+            });
+            const result= await response.json();
+            
+            if(!response.ok || result.error) {
+                document.getElementById('import-error').textContent = result.error || 'Error al procesar el archivo';
+                document.getElementById('import-error').classList.remove('hidden');
+                return;
+            }
+            importData=result;
+            document.getElementById('import-preview').classList.remove('hidden');
+            document.getElementById('import-preview-content').textContent = `${result.materias.length} materias encontradas, ${result.calificaciones.length} calificaciones encontradas`;
+            document.getElementById('import-confirm-btn').disabled = false;
+            document.getElementById('import-error').classList.add('hidden');
+        } catch(err) {
+            document.getElementById('import-error').textContent = 'Error al procesar el archivo';
+            document.getElementById('import-error').classList.remove('hidden');
+        }
     }
     
     function openImportModal() {
