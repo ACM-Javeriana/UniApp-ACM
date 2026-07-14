@@ -982,9 +982,20 @@
                                placeholder="1">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color (opcional)</label>
-                        <input type="color" id="materia-color" value="#5091AF"
-                               class="w-full h-10 px-1 py-1 border border-gray-300 dark:border-gray-600 rounded-lg">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Color</label>
+                        <input type="hidden" id="materia-color" value="">
+                        <div class="flex items-center gap-3">
+                            <button type="button" id="materia-color-trigger"
+                                    class="w-9 h-9 rounded-full border-2 border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-400 transition-colors shadow-sm"
+                                    onclick="toggleColorPool()" title="Cambiar color"></button>
+                            <button type="button" onclick="resetColorToTipoDefault()"
+                                    class="text-xs text-gray-400 hover:text-accent-500 dark:text-gray-500 dark:hover:text-accent-400">
+                                Restablecer
+                            </button>
+                        </div>
+                        <div id="materia-color-pool" class="hidden mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <div class="grid grid-cols-8 gap-1.5" id="materia-color-grid"></div>
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -1908,8 +1919,10 @@
             const cal = storage.getCalificacion(m.codigo);
             const nota = cal?.nota;
             const hasCustomColor = m.color && m.color.startsWith('#');
-            const colorDot = hasCustomColor ? `<span class="inline-block w-2.5 h-2.5 rounded-full mr-2 flex-shrink-0" style="background-color: ${m.color};"></span>` : '';
-            const rowStyle = hasCustomColor ? `style="border-left: 3px solid ${m.color};"` : '';
+            const isFailed = m.estado === 'failed';
+            const useCustomColor = hasCustomColor && !isFailed;
+            const colorDot = useCustomColor ? `<span class="inline-block w-2.5 h-2.5 rounded-full mr-2 flex-shrink-0" style="background-color: ${m.color};"></span>` : '';
+            const rowStyle = useCustomColor ? `style="border-left: 3px solid ${m.color};"` : '';
             
             return `
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" data-codigo="${m.codigo}" onclick="openEditMateriaModal('${m.codigo}')" ${rowStyle}>
@@ -2022,10 +2035,12 @@
                     const canSimulate = m.estado === 'pending' && canEnrollInSimulation(m.codigo).valid;
                     const isSimulated = simulatedCourses.includes(m.codigo);
                     const hasCustomColor = m.color && m.color.startsWith('#');
+                    const isFailed = m.estado === 'failed';
+                    const useCustomColor = hasCustomColor && !isFailed;
                     
-                    const cardBorderClass = hasCustomColor ? '' : st.border;
-                    const cardBgClass = hasCustomColor ? '' : st.bg;
-                    const cardStyle = hasCustomColor ? `style="border-left-color: ${m.color}; background-color: ${m.color}15;"` : '';
+                    const cardBorderClass = useCustomColor ? '' : st.border;
+                    const cardBgClass = useCustomColor ? '' : st.bg;
+                    const cardStyle = useCustomColor ? `style="border-left-color: ${m.color}; background-color: ${m.color}15;"` : '';
                     
                     html += `
                         <div class="course-card p-2 rounded-lg border-l-4 ${cardBorderClass} ${cardBgClass} hover:shadow-sm transition-all group relative ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''} ${isSimulated ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}" ${cardStyle}
@@ -2388,12 +2403,80 @@
     }
     
     // Modal functions
+    const TIPO_COLORS = {
+        'nucleo': '#0D9488',
+        'basicas': '#059669',
+        'sociohumano': '#D97706',
+        'enfasis': '#7C3AED',
+        'complementarias': '#DB2777',
+        'electivas': '#4F46E5'
+    };
+
+    const COLOR_POOL = [
+        '#0D9488', '#14B8A6', '#5EEAD4', '#99F6E4',
+        '#059669', '#10B981', '#34D399', '#6EE7B7',
+        '#D97706', '#F59E0B', '#FBBF24', '#FCD34D',
+        '#7C3AED', '#8B5CF6', '#A78BFA', '#C4B5FD',
+        '#DB2777', '#EC4899', '#F472B6', '#F9A8D4',
+        '#4F46E5', '#6366F1', '#818CF8', '#A5B4FC',
+        '#DC2626', '#EF4444', '#F87171', '#FCA5A5',
+        '#4B5563', '#6B7280', '#9CA3AF', '#D1D5DB'
+    ];
+
+    function getDefaultColorForTipo(tipo) {
+        return TIPO_COLORS[tipo] || '#5091AF';
+    }
+
+    function renderColorPool(selectedColor) {
+        const grid = document.getElementById('materia-color-grid');
+        const trigger = document.getElementById('materia-color-trigger');
+        if (!grid || !trigger) return;
+        trigger.style.backgroundColor = selectedColor;
+        const tipo = document.getElementById('materia-tipo').value;
+        const defaultColor = getDefaultColorForTipo(tipo);
+        const allColors = COLOR_POOL.includes(defaultColor) ? COLOR_POOL : [defaultColor, ...COLOR_POOL];
+        grid.innerHTML = allColors.map(c => {
+            const sel = c === selectedColor;
+            return `<button type="button" class="color-swatch w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${sel ? 'border-gray-900 dark:border-white ring-2 ring-offset-1 ring-gray-400' : 'border-gray-200 dark:border-gray-500 hover:border-gray-400 dark:hover:border-gray-300'}" data-color="${c}" style="background-color: ${c};" onclick="selectColor('${c}')" title="${c}"></button>`;
+        }).join('');
+    }
+
+    function selectColor(hex) {
+        document.getElementById('materia-color').value = hex;
+        document.getElementById('materia-color-trigger').style.backgroundColor = hex;
+        document.querySelectorAll('.color-swatch').forEach(s => {
+            const isActive = s.dataset.color === hex;
+            s.classList.toggle('border-gray-900', isActive);
+            s.classList.toggle('dark:border-white', isActive);
+            s.classList.toggle('ring-2', isActive);
+            s.classList.toggle('ring-offset-1', isActive);
+            s.classList.toggle('ring-gray-400', isActive);
+            s.classList.toggle('border-gray-200', !isActive);
+            s.classList.toggle('dark:border-gray-500', !isActive);
+            s.classList.toggle('hover:border-gray-400', !isActive);
+            s.classList.toggle('dark:hover:border-gray-300', !isActive);
+        });
+    }
+
+    function toggleColorPool() {
+        document.getElementById('materia-color-pool').classList.toggle('hidden');
+    }
+
+    function resetColorToTipoDefault() {
+        const tipo = document.getElementById('materia-tipo').value;
+        selectColor(getDefaultColorForTipo(tipo));
+    }
+
     function openNewMateriaModal() {
         document.getElementById('materia-modal-title').textContent = 'Nueva Materia';
         document.getElementById('materia-form').reset();
         document.getElementById('materia-edit-code').value = '';
         document.getElementById('materia-code').disabled = false;
         document.getElementById('materia-status-grade-section').classList.add('hidden');
+        document.getElementById('materia-color-pool').classList.add('hidden');
+        const defaultColor = getDefaultColorForTipo('');
+        document.getElementById('materia-color').value = defaultColor;
+        renderColorPool(defaultColor);
         document.getElementById('materia-modal').classList.remove('hidden');
     }
     
@@ -2410,8 +2493,11 @@
         document.getElementById('materia-semester').value = materia.semestre;
         document.getElementById('materia-prerequisites').value = (materia.prerrequisitos || []).join(', ');
         document.getElementById('materia-corequisites').value = (materia.correquisitos || []).join(', ');
-        document.getElementById('materia-color').value = materia.color || '#5091AF';
+        const materiaColor = materia.color || getDefaultColorForTipo(materia.tipo);
+        document.getElementById('materia-color').value = materiaColor;
         document.getElementById('materia-tipo').value = materia.tipo || '';
+        document.getElementById('materia-color-pool').classList.add('hidden');
+        renderColorPool(materiaColor);
         
         // Show and populate status/grade section
         document.getElementById('materia-status-grade-section').classList.remove('hidden');
@@ -2505,6 +2591,19 @@
             loadPensumData();
             populateSimulateSelect();
             App.showAlert(editCode ? 'Materia actualizada' : 'Materia agregada', 'success');
+        });
+
+        const tipoSelect = document.getElementById('materia-tipo');
+        const colorInput = document.getElementById('materia-color');
+        let lastTipo = tipoSelect.value;
+
+        tipoSelect.addEventListener('change', function() {
+            const currentColor = colorInput.value;
+            const prevDefault = getDefaultColorForTipo(lastTipo);
+            if (currentColor === prevDefault) {
+                selectColor(getDefaultColorForTipo(this.value));
+            }
+            lastTipo = this.value;
         });
     }
     
@@ -2669,7 +2768,7 @@
                     prerrequisitos: m.prerrequisitos || [],
                     correquisitos: m.correquisitos || [],
                     estado: m.estado || 'pending',
-                    color: m.color || '#5091AF',
+                    color: m.color || getDefaultColorForTipo(m.tipo),
                     tipo: m.tipo || ''
                 });
                 materiasImported++;
@@ -3862,6 +3961,7 @@
                 credits: m.creditos,
                 semester: m.semestre,
                 status: m.estado,
+                color: m.color || null,
                 prerequisites: m.prerrequisitos || [],
                 corequisites: m.correquisitos || [],
                 x: 0,
@@ -4096,8 +4196,9 @@
         const y = node.y - node.height / 2;
         const cornerRadius = 8;
         
-        // Fill color based on status
-        const baseColor = statusColors[node.status] || statusColors.pending;
+        // Fill color: materia.color overrides status, except failed always red
+        const failedStatus = node.status === 'failed';
+        const baseColor = failedStatus ? statusColors.failed : (node.color && node.color.startsWith('#') ? node.color : statusColors[node.status] || statusColors.pending);
         
         if (isSelected || isHovered) {
             ctx.shadowColor = baseColor;
