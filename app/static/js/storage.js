@@ -494,7 +494,7 @@ class StorageManager {
      */
     getConfiguracion() {
         return this.getLocal('configuracion') || {
-            max_creditos_semestre: 18,
+            max_creditos_semestre: 24,
             umbral_gpa: 2.0,
             mostrar_alertas: true,
             tema: 'light'

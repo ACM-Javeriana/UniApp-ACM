@@ -69,7 +69,7 @@ class Configuracion(BaseModel):
     User configuration and preferences
     """
     # Credit limits
-    max_credits_per_semester: int = Field(default=21, ge=1, le=30, description="Maximum credits per semester")
+    max_credits_per_semester: int = Field(default=24, ge=1, le=30, description="Maximum credits per semester")
     
     # GPA settings
     gpa_alert_threshold: float = Field(default=3.0, ge=0.0, le=5.0, description="Alert if GPA falls below this")

@@ -2173,20 +2173,43 @@
             return;
         }
         
+        // Check credit limit for corequisites that will move together
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
+        const materias = storage.getMaterias();
+        let totalCreditsToAdd = draggedMateria.creditos || 0;
+        const coreqsToMove = [];
+        
+        if (draggedMateria.correquisitos?.length > 0) {
+            draggedMateria.correquisitos.forEach(coreCodigo => {
+                const coreMateria = materias.find(m => m.codigo === coreCodigo);
+                if (coreMateria && coreMateria.estado !== 'passed' && coreMateria.estado !== 'failed' && coreMateria.semestre !== targetSemester) {
+                    totalCreditsToAdd += coreMateria.creditos || 0;
+                    coreqsToMove.push(coreMateria);
+                }
+            });
+        }
+        
+        const semesterCredits = materias
+            .filter(m => m.semestre === targetSemester && m.codigo !== draggedMateria.codigo && !coreqsToMove.find(c => c.codigo === m.codigo))
+            .reduce((sum, m) => sum + (m.creditos || 0), 0);
+        
+        if (semesterCredits + totalCreditsToAdd > maxCredits) {
+            App.showAlert(`No se puede mover: el semestre ${targetSemester} quedaría con ${semesterCredits + totalCreditsToAdd} créditos (máximo ${maxCredits})`, 'error');
+            return;
+        }
+        
         // Move the materia
         draggedMateria.semestre = targetSemester;
         storage.saveMateria(draggedMateria);
         
         // Move corequisites together
-        if (draggedMateria.correquisitos?.length > 0) {
-            draggedMateria.correquisitos.forEach(coreCodigo => {
-                const coreMateria = storage.getMateria(coreCodigo);
-                if (coreMateria && coreMateria.estado !== 'passed' && coreMateria.estado !== 'failed') {
-                    coreMateria.semestre = targetSemester;
-                    storage.saveMateria(coreMateria);
-                }
+        if (coreqsToMove.length > 0) {
+            coreqsToMove.forEach(coreMateria => {
+                coreMateria.semestre = targetSemester;
+                storage.saveMateria(coreMateria);
             });
-            App.showAlert(`Materia y correquisitos movidos al semestre ${targetSemester}`, 'success');
+            App.showAlert(`Materia y ${coreqsToMove.length} correquisito(s) movidos al semestre ${targetSemester}`, 'success');
         } else {
             App.showAlert(`Materia movida al semestre ${targetSemester}`, 'success');
         }
@@ -2217,6 +2240,26 @@
         // Can't move passed or failed subjects
         if (materia.estado === 'passed' || materia.estado === 'failed') {
             return { valid: false, reason: 'No puedes mover materias aprobadas o reprobadas' };
+        }
+        
+        // Check duplicate: same code already in target semester
+        const alreadyInTarget = materias.find(m => m.codigo === materia.codigo && m.semestre === targetSemester);
+        if (alreadyInTarget && materia.semestre !== targetSemester) {
+            return { valid: false, reason: `"${materia.nombre}" ya está en el semestre ${targetSemester}` };
+        }
+        
+        // Check credit limit for target semester
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
+        const semesterCredits = materias
+            .filter(m => m.semestre === targetSemester && m.codigo !== materia.codigo)
+            .reduce((sum, m) => sum + (m.creditos || 0), 0);
+        const newTotal = semesterCredits + (materia.creditos || 0);
+        if (newTotal > maxCredits) {
+            return { 
+                valid: false, 
+                reason: `El semestre ${targetSemester} quedaría con ${newTotal} créditos (máximo ${maxCredits})` 
+            };
         }
         
         // Check prerequisites - must be in earlier semesters
@@ -2578,6 +2621,18 @@
                 }
             }
             
+            // Check credit limit for the target semester
+            const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+            const maxCredits = config.max_creditos_semestre || 24;
+            const allMaterias = storage.getMaterias();
+            const semesterMaterias = allMaterias.filter(m => m.semestre === semestre && m.codigo !== (editCode || codigo));
+            const semesterCredits = semesterMaterias.reduce((sum, m) => sum + (m.creditos || 0), 0);
+            const newTotal = semesterCredits + creditos;
+            if (newTotal > maxCredits) {
+                App.showAlert(`El semestre ${semestre} quedaría con ${newTotal} créditos (máximo ${maxCredits})`, 'error');
+                return;
+            }
+            
             // Get status (only when editing)
             let estado = 'pending';
             if (editCode) {
@@ -2651,6 +2706,26 @@
         const materias = storage.getMaterias();
         const nextSemester = failedMateria.semestre + 1;
         
+        // Check credit limit for next semester
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
+        const semesterCredits = materias
+            .filter(m => m.semestre === nextSemester)
+            .reduce((sum, m) => sum + (m.creditos || 0), 0);
+        const newTotal = semesterCredits + (failedMateria.creditos || 0);
+        
+        let targetSemester = nextSemester;
+        if (newTotal > maxCredits) {
+            // Try subsequent semesters until there's room
+            for (let s = nextSemester + 1; s <= 15; s++) {
+                const sCredits = materias.filter(m => m.semestre === s).reduce((sum, m) => sum + (m.creditos || 0), 0);
+                if (sCredits + (failedMateria.creditos || 0) <= maxCredits) {
+                    targetSemester = s;
+                    break;
+                }
+            }
+        }
+        
         // Generate new code for the repeated subject (e.g., MAT101 -> MAT101-R1)
         let repeatCount = 1;
         let newCodigo = `${failedMateria.codigo}-R${repeatCount}`;
@@ -2664,7 +2739,7 @@
             codigo: newCodigo,
             nombre: `${failedMateria.nombre} (Repetición)`,
             creditos: failedMateria.creditos,
-            semestre: nextSemester,
+            semestre: targetSemester,
             prerrequisitos: [], // No prerequisites since you're repeating
             correquisitos: failedMateria.correquisitos || [],
             estado: 'pending',
@@ -2678,21 +2753,21 @@
         materias.forEach(m => {
             if (m.prerrequisitos?.includes(failedMateria.codigo)) {
                 // Push dependent subjects to future semesters if needed
-                if (m.semestre <= nextSemester && m.estado === 'pending') {
-                    m.semestre = nextSemester + 1;
+                if (m.semestre <= targetSemester && m.estado === 'pending') {
+                    m.semestre = targetSemester + 1;
                     storage.saveMateria(m);
                 }
             }
             // Also check correquisites - they need to move together
             if (m.correquisitos?.includes(failedMateria.codigo) && m.estado === 'pending') {
-                if (m.semestre < nextSemester) {
-                    m.semestre = nextSemester;
+                if (m.semestre < targetSemester) {
+                    m.semestre = targetSemester;
                     storage.saveMateria(m);
                 }
             }
         });
         
-        App.showAlert(`Materia reprogramada para semestre ${nextSemester}`, 'info');
+        App.showAlert(`Materia reprogramada para semestre ${targetSemester}`, 'info');
     }
 
     async function handleProgressReportImport(event){
@@ -2947,8 +3022,8 @@
     }
     
     function updateSimMaxCredits() {
-        const config = storage.getConfiguracion?.() || { creditos_max: 24 };
-        const maxCredits = config.creditos_max || 24;
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
         document.getElementById('sim-max-credits').textContent = maxCredits;
     }
     
@@ -3015,8 +3090,8 @@
         
         // Check credit limit
         const materia = storage.getMateria(codigo);
-        const config = storage.getConfiguracion?.() || { creditos_max: 24 };
-        const maxCredits = config.creditos_max || 24;
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
         const currentSimCredits = getSimulatedCredits();
         
         if (currentSimCredits + materia.creditos > maxCredits) {
@@ -3051,8 +3126,8 @@
         const creditsBar = document.getElementById('sim-credits-bar');
         const warningsDiv = document.getElementById('sim-warnings');
         
-        const config = storage.getConfiguracion?.() || { creditos_max: 21 };
-        const maxCredits = config.creditos_max || 21;
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
         const totalCredits = getSimulatedCredits();
         
         // Update credits display
@@ -3229,8 +3304,8 @@
     function applySimulation() {
         if (simulatedCourses.length === 0) return;
         
-        const config = storage.getConfiguracion?.() || { creditos_max: 24 };
-        const maxCredits = config.creditos_max || 24;
+        const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+        const maxCredits = config.max_creditos_semestre || 24;
         const totalCredits = getSimulatedCredits();
         
         if (totalCredits > maxCredits) {

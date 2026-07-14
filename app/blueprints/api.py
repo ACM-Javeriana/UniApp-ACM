@@ -349,7 +349,7 @@ def check_credits():
     credits_to_add = data.get('credits', 0)
     semester = data.get('semester')
     pensum_data = data.get('pensum')
-    max_credits = data.get('max_credits', 21)
+    max_credits = data.get('max_credits', 24)
     
     if semester is None or not pensum_data:
         return jsonify({'error': 'semester and pensum required'}), 400
