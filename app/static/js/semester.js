@@ -86,9 +86,11 @@ const Semester = {
 
         const status = statusConfig[materia.estado] || statusConfig.pending;
         const hasCustomColor = materia.color && materia.color.startsWith('#');
-        const rowBgClass = hasCustomColor ? '' : status.bg;
-        const rowBorderClass = hasCustomColor ? '' : status.border;
-        const rowStyle = hasCustomColor ? `style="border-color: ${materia.color}; background-color: ${materia.color}15;"` : '';
+        const isFailed = materia.estado === 'failed';
+        const useCustomColor = hasCustomColor && !isFailed;
+        const rowBgClass = useCustomColor ? '' : status.bg;
+        const rowBorderClass = useCustomColor ? '' : status.border;
+        const rowStyle = useCustomColor ? `style="border-color: ${materia.color}; background-color: ${materia.color}15;"` : '';
 
         return `
             <div class="course-row ${rowBgClass} ${rowBorderClass} border rounded-lg p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer" ${rowStyle}

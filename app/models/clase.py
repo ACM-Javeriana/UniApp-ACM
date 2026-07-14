@@ -95,6 +95,7 @@ class Clase(BaseModel):
     schedule: list[BloqueHorario] = Field(default_factory=list, description="Time blocks for this class")
     professor: Optional[str] = Field(default=None, max_length=100, description="Professor name")
     location: Optional[str] = Field(default=None, max_length=50, description="Classroom location")
+    credits: int = Field(default=0, ge=0, description="Credits for this course")
     
     @field_validator('materia_code')
     @classmethod
@@ -147,9 +148,10 @@ class Clase(BaseModel):
             'class_code': self.class_code,
             'schedule': [b.to_dict() for b in self.schedule],
             'professor': self.professor,
-            'location': self.location
+            'location': self.location,
+            'credits': self.credits
         }
-    
+
     @classmethod
     def from_dict(cls, data: dict) -> 'Clase':
         """Create Clase from dictionary"""
@@ -159,5 +161,6 @@ class Clase(BaseModel):
             class_code=data['class_code'],
             schedule=schedule,
             professor=data.get('professor'),
-            location=data.get('location')
+            location=data.get('location'),
+            credits=data.get('credits', 0)
         )

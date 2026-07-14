@@ -111,8 +111,10 @@ const Pensum = {
         const statusClass = statusColors[materia.estado] || statusColors.pending;
         const statusLabel = statusLabels[materia.estado] || 'Pendiente';
         const hasCustomColor = materia.color && materia.color.startsWith('#');
-        const cardBorderClass = hasCustomColor ? '' : statusClass;
-        const cardStyle = hasCustomColor ? `style="border-left-color: ${materia.color}; background-color: ${materia.color}15;"` : '';
+        const isFailed = materia.estado === 'failed';
+        const useCustomColor = hasCustomColor && !isFailed;
+        const cardBorderClass = useCustomColor ? '' : statusClass;
+        const cardStyle = useCustomColor ? `style="border-left-color: ${materia.color}; background-color: ${materia.color}15;"` : '';
 
         // Get grade if exists
         const calificacion = storage.getCalificacion(materia.codigo);
