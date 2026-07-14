@@ -317,7 +317,7 @@ class PensumService:
         credits_to_add: int,
         semester: int,
         pensum: Pensum,
-        max_credits: int = 21
+        max_credits: int = 24
     ) -> dict:
         """
         Check if adding credits to a semester is allowed

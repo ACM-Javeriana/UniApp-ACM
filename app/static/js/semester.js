@@ -85,9 +85,15 @@ const Semester = {
         };
 
         const status = statusConfig[materia.estado] || statusConfig.pending;
+        const hasCustomColor = materia.color && materia.color.startsWith('#');
+        const isFailed = materia.estado === 'failed';
+        const useCustomColor = hasCustomColor && !isFailed;
+        const rowBgClass = useCustomColor ? '' : status.bg;
+        const rowBorderClass = useCustomColor ? '' : status.border;
+        const rowStyle = useCustomColor ? `style="border-color: ${materia.color}; background-color: ${materia.color}15;"` : '';
 
         return `
-            <div class="course-row ${status.bg} ${status.border} border rounded-lg p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer"
+            <div class="course-row ${rowBgClass} ${rowBorderClass} border rounded-lg p-4 mb-3 hover:shadow-md transition-shadow cursor-pointer" ${rowStyle}
                  onclick="Semester.showCourseModal('${materia.codigo}')">
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="flex-1 min-w-[200px]">

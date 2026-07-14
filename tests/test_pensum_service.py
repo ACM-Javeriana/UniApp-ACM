@@ -126,20 +126,20 @@ class TestDeleteMateria:
 
 class TestCanAddToSemester:
     def test_within_limit(self, pensum_simple):
-        # CALC1 (3cr) en sem 1; agregar 10cr → 13cr ≤ 21
+        # CALC1 (3cr) en sem 1; agregar 10cr → 13cr ≤ 24
         result = PensumService.can_add_to_semester(10, 1, pensum_simple)
         assert result["allowed"] is True
         assert result["new_total"] == 13
 
     def test_exceeds_limit(self, pensum_simple):
-        # CALC1 (3cr) en sem 1; agregar 20cr → 23cr > 21
-        result = PensumService.can_add_to_semester(20, 1, pensum_simple)
+        # CALC1 (3cr) en sem 1; agregar 22cr → 25cr > 24
+        result = PensumService.can_add_to_semester(22, 1, pensum_simple)
         assert result["allowed"] is False
-        assert result["excess"] == 2
+        assert result["excess"] == 1
 
     def test_exactly_at_limit(self, pensum_simple):
-        # CALC1 (3cr) en sem 1; agregar 18cr → 21cr = límite exacto
-        result = PensumService.can_add_to_semester(18, 1, pensum_simple)
+        # CALC1 (3cr) en sem 1; agregar 21cr → 24cr = límite exacto
+        result = PensumService.can_add_to_semester(21, 1, pensum_simple)
         assert result["allowed"] is True
 
     def test_custom_max_credits(self, pensum_simple):

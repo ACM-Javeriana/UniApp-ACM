@@ -402,13 +402,34 @@
         const materia = storage.getMateria(codigo);
         if (!materia) return;
 
-        if (isINT(targetPeriod)) {
+        if (!isINT(targetPeriod)) {
+            const targetSemester = parseInt(targetPeriod);
+            
+            // Check duplicate: same code already in target semester
+            const allMaterias = storage.getMaterias();
+            const alreadyInTarget = allMaterias.find(m => m.codigo === codigo && m.semestre === targetSemester && !m.semestre_real);
+            if (alreadyInTarget) {
+                App.showAlert(`"${materia.nombre}" ya está en el semestre ${targetSemester}`, 'error');
+                return;
+            }
+            
+            // Check credit limit
+            const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+            const maxCredits = config.max_creditos_semestre || 24;
+            const semesterCredits = allMaterias
+                .filter(m => m.semestre === targetSemester && m.codigo !== codigo && !m.semestre_real)
+                .reduce((sum, m) => sum + (m.creditos || 0), 0);
+            const newTotal = semesterCredits + (materia.creditos || 0);
+            if (newTotal > maxCredits) {
+                App.showAlert(`El semestre ${targetSemester} quedaría con ${newTotal} créditos (máximo ${maxCredits})`, 'error');
+                return;
+            }
+            
+            materia.semestre = targetSemester;
+            materia.semestre_real = null;
+        } else {
             // Intersemestral: track in semestre_real, keep pensum position
             materia.semestre_real = targetPeriod;
-        } else {
-            // Regular semester: update pensum position, clear semestre_real
-            materia.semestre = parseInt(targetPeriod);
-            materia.semestre_real = null;
         }
 
         storage.saveMateria(materia);
