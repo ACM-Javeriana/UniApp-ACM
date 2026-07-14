@@ -8,7 +8,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -19,7 +19,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -30,7 +30,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -41,7 +41,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -52,7 +52,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -63,7 +63,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -74,7 +74,7 @@
       "prerrequisitos": ["1295"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -85,7 +85,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -96,7 +96,7 @@
       "prerrequisitos": ["33698"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -107,7 +107,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -118,7 +118,7 @@
       "prerrequisitos": ["33763"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -129,7 +129,7 @@
       "prerrequisitos": ["33698"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -140,7 +140,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#6366f1",
+      "color": "#4F46E5",
       "tipo": "electivas"
     },
     {
@@ -151,7 +151,7 @@
       "prerrequisitos": ["1297", "1290"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -162,7 +162,7 @@
       "prerrequisitos": ["33518", "33699"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -173,7 +173,7 @@
       "prerrequisitos": ["33699"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -184,7 +184,7 @@
       "prerrequisitos": ["33698"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -195,7 +195,7 @@
       "prerrequisitos": ["33733"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#f59e0b",
+      "color": "#D97706",
       "tipo": "sociohumano"
     },
     {
@@ -206,7 +206,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#6366f1",
+      "color": "#4F46E5",
       "tipo": "electivas"
     },
     {
@@ -217,7 +217,7 @@
       "prerrequisitos": ["1295"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -228,7 +228,7 @@
       "prerrequisitos": ["33518", "33699"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -239,7 +239,7 @@
       "prerrequisitos": ["4075"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -250,7 +250,7 @@
       "prerrequisitos": ["34816"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -261,7 +261,7 @@
       "prerrequisitos": ["34805"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -272,7 +272,7 @@
       "prerrequisitos": ["34580"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -283,7 +283,7 @@
       "prerrequisitos": ["1297"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -294,7 +294,7 @@
       "prerrequisitos": ["33518", "33699"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -305,7 +305,7 @@
       "prerrequisitos": ["33733", "4082", "34803"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -316,7 +316,7 @@
       "prerrequisitos": ["34809", "34805", "4190", "4085"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -327,7 +327,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#f59e0b",
+      "color": "#D97706",
       "tipo": "sociohumano"
     },
     {
@@ -338,7 +338,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#ec4899",
+      "color": "#DB2777",
       "tipo": "complementarias"
     },
     {
@@ -349,7 +349,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#6366f1",
+      "color": "#4F46E5",
       "tipo": "electivas"
     },
     {
@@ -360,7 +360,7 @@
       "prerrequisitos": ["1297", "1290"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -371,7 +371,7 @@
       "prerrequisitos": ["1290"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -382,7 +382,7 @@
       "prerrequisitos": ["4196", "33732", "34801"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -393,7 +393,7 @@
       "prerrequisitos": ["33700", "4190", "34801"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -404,7 +404,7 @@
       "prerrequisitos": ["33700", "4190", "34806"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -415,7 +415,7 @@
       "prerrequisitos": ["34810"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#f59e0b",
+      "color": "#D97706",
       "tipo": "sociohumano"
     },
     {
@@ -426,7 +426,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#ec4899",
+      "color": "#DB2777",
       "tipo": "complementarias"
     },
     {
@@ -437,7 +437,7 @@
       "prerrequisitos": ["1300"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -448,7 +448,7 @@
       "prerrequisitos": ["4196"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -459,7 +459,7 @@
       "prerrequisitos": ["4082", "34803"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -470,7 +470,7 @@
       "prerrequisitos": ["22586", "34807", "34808"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -481,7 +481,7 @@
       "prerrequisitos": ["2544", "34803", "34806"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#f59e0b",
+      "color": "#D97706",
       "tipo": "sociohumano"
     },
     {
@@ -492,7 +492,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#f59e0b",
+      "color": "#D97706",
       "tipo": "sociohumano"
     },
     {
@@ -503,7 +503,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#8b5cf6",
+      "color": "#7C3AED",
       "tipo": "enfasis"
     },
     {
@@ -514,7 +514,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -525,7 +525,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -536,7 +536,7 @@
       "prerrequisitos": ["34810", "31339"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -547,7 +547,7 @@
       "prerrequisitos": ["34810"],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     },
     {
@@ -558,7 +558,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#f59e0b",
+      "color": "#D97706",
       "tipo": "sociohumano"
     },
     {
@@ -569,7 +569,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "pending",
-      "color": "#8b5cf6",
+      "color": "#7C3AED",
       "tipo": "enfasis"
     }
   ],

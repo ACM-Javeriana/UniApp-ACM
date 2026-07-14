@@ -15,6 +15,15 @@ import re
 
 warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning) # Ingore warnings about parsing HTML as XML
 
+TIPO_COLORS = {
+    'nucleo': '#0D9488',
+    'basicas': '#0284C7',
+    'sociohumano': '#D97706',
+    'enfasis': '#7C3AED',
+    'complementarias': '#DB2777',
+    'electivas': '#4F46E5'
+}
+
 class ParserService:
     """
     Service for parsing raw data class input
@@ -251,7 +260,7 @@ class ParserService:
                     "prerrequisitos": [],
                     "correquisitos": [],
                     "estado": "pending",
-                    "color": "#5091AF",
+                    "color": TIPO_COLORS.get('basicas', '#0284C7'),
                     "tipo": 'basicas'
                 }
                 

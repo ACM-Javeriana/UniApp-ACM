@@ -8,7 +8,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "passed",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -19,7 +19,7 @@
       "prerrequisitos": ["MAT101"],
       "correquisitos": [],
       "estado": "enrolled",
-      "color": "#5091AF",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -30,7 +30,7 @@
       "prerrequisitos": [],
       "correquisitos": ["FIS101L"],
       "estado": "passed",
-      "color": "#6366f1",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -41,7 +41,7 @@
       "prerrequisitos": [],
       "correquisitos": ["FIS101"],
       "estado": "passed",
-      "color": "#6366f1",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -52,7 +52,7 @@
       "prerrequisitos": ["FIS101", "MAT101"],
       "correquisitos": ["FIS102L"],
       "estado": "pending",
-      "color": "#6366f1",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -63,7 +63,7 @@
       "prerrequisitos": ["FIS101L"],
       "correquisitos": ["FIS102"],
       "estado": "pending",
-      "color": "#6366f1",
+      "color": "#0284C7",
       "tipo": "basicas"
     },
     {
@@ -74,7 +74,7 @@
       "prerrequisitos": [],
       "correquisitos": [],
       "estado": "passed",
-      "color": "#10b981",
+      "color": "#0D9488",
       "tipo": "nucleo"
     }
   ],

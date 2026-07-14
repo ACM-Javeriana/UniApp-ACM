@@ -2,6 +2,15 @@ import re
 import io
 from typing import Optional
 
+TIPO_COLORS = {
+    'nucleo': '#0D9488',
+    'basicas': '#0284C7',
+    'sociohumano': '#D97706',
+    'enfasis': '#7C3AED',
+    'complementarias': '#DB2777',
+    'electivas': '#4F46E5'
+}
+
 def cicle_sort_key(cicle: str) -> tuple:
     m= re.match(r'(Ter|Prim|Seg)Pe(\d{4})', cicle)
     if not m:
@@ -120,7 +129,7 @@ def build_output(raw_rows:list) -> dict:
             'prerrequisitos': [],
             'correquisitos': [],
             'estado': status,
-            'color': '#5091AF',
+            'color': TIPO_COLORS.get(Type, '#5091AF'),
             'tipo': Type,
         })
         if grade is not None:
