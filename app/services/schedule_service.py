@@ -170,10 +170,7 @@ class ScheduleService:
             combination = HorarioCombination(
                 id=str(uuid.uuid4())[:8],
                 clases=combo_list,
-                total_credits=sum(
-                    clase.materia_code for clase in combo_list
-                    if isinstance(clase.materia_code, int)
-                ) or 0
+                total_credits=sum(clase.credits for clase in combo_list)
             )
             combination.calculate_metrics(franjas)
             valid_combinations.append(combination)

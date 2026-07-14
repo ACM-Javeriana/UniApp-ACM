@@ -1,0 +1,753 @@
+{% extends 'base.html' %}
+{% block title %}Preguntas Frecuentes - UniApp{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 sm:p-8 transition-colors">
+        <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-accent-500 flex items-center justify-center flex-shrink-0 shadow-md">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Preguntas Frecuentes</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Guía académica para estudiantes de la Pontificia Universidad Javeriana — promedios, reglamento y tipos de materias explicados.</p>
+            </div>
+        </div>
+        <!-- Search -->
+        <div class="relative mt-5">
+            <svg class="absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" style="left: 0.875rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input id="faq-search" type="text" placeholder="Buscar pregunta..."
+                   style="padding-left: 2.5rem;"
+                   class="w-full pr-4 py-2.5 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition-colors"/>
+        </div>
+    </div>
+
+    <!-- Category filter pills -->
+    <div class="flex flex-wrap gap-2" id="faq-filters">
+        <button class="faq-pill active" data-cat="all">Todas</button>
+        <button class="faq-pill" data-cat="tipos">
+            <span class="w-2 h-2 rounded-full bg-violet-500 inline-block"></span> Tipos de materias
+        </button>
+        <button class="faq-pill" data-cat="notas">
+            <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Calificaciones
+        </button>
+        <button class="faq-pill" data-cat="situacion">
+            <span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> Situación académica
+        </button>
+        <button class="faq-pill" data-cat="grado">
+            <span class="w-2 h-2 rounded-full bg-teal-500 inline-block"></span> Requisitos de grado
+        </button>
+        <button class="faq-pill" data-cat="pensum">
+            <span class="w-2 h-2 rounded-full bg-accent-500 inline-block"></span> Pensum y créditos
+        </button>
+    </div>
+
+    <!-- FAQ list -->
+    <div id="faq-list" class="space-y-2">
+
+        <!-- ═══════════════ TIPOS DE MATERIAS ═══════════════ -->
+        <div class="faq-section-header" data-cat="tipos">
+            <span class="w-2.5 h-2.5 rounded-full bg-violet-500"></span>
+            <span>Tipos de materias</span>
+        </div>
+
+        <div class="faq-item" data-cat="tipos" data-kw="electiva libre elección">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es una Electiva?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Las <strong>Electivas</strong> son asignaturas de libre elección que el estudiante puede seleccionar dentro de un catálogo aprobado por su programa. No están atadas a un área específica de la carrera, lo que le da flexibilidad para ampliar su formación según sus intereses.</p>
+                <p class="mt-2">Pueden incluir materias de idiomas, artes, deportes u otras disciplinas académicas. Contribuyen al total de créditos requeridos para grado, pero con mayor libertad de selección que las complementarias.</p>
+                <div class="faq-note">En UniApp aparecen con el tipo <code>electivas</code> y color índigo.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tipos" data-kw="complementaria otra facultad libre">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es una Complementaria?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Las <strong>Complementarias</strong> son asignaturas fuera del núcleo del plan de estudios que amplían la formación del estudiante. Pueden tomarse de otras facultades o programas de la Javeriana, e incluso de otras universidades en el marco de convenios.</p>
+                <p class="mt-2">Su objetivo es enriquecer el perfil profesional con conocimientos transversales: gestión, comunicación, innovación, etc.</p>
+                <div class="faq-note">En UniApp aparecen con el tipo <code>complementarias</code> y color rosa.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tipos" data-kw="enfasis profundización especialización línea">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es un Énfasis?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Los <strong>Énfasis</strong> son materias de profundización dentro de tu carrera. Permiten especializarse en una línea de trabajo específica según el perfil profesional deseado. El estudiante elige un conjunto de materias de énfasis que definen su área de experticia.</p>
+                <div class="faq-note">En UniApp aparecen con el tipo <code>enfasis</code> y color morado.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tipos" data-kw="nucleo core obligatoria carrera propia">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es una materia del Núcleo?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Las materias del <strong>Núcleo</strong> son las asignaturas específicas y obligatorias de tu programa. Constituyen el corazón de la carrera y son diseñadas por la facultad para desarrollar las competencias propias de la profesión.</p>
+                <p class="mt-2">Son irremplazables: si la pierdes, debes volver a cursarla. Generalmente tienen la mayor cantidad de prerrequisitos y definen la secuencia lógica del pensum.</p>
+                <div class="faq-note">En UniApp aparecen con el tipo <code>nucleo</code>. En Ing. Sistemas su color es azul verdoso; en Ciencia de Datos, morado oscuro.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tipos" data-kw="basica matemáticas física ciencias fundamentales">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es una materia Básica?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Las materias <strong>Básicas</strong> son las ciencias fundamentales que sustentan la formación profesional. Típicamente incluyen: Matemáticas, Cálculo, Álgebra Lineal, Estadística, Física, etc. Son comunes a múltiples programas de ingeniería y ciencias.</p>
+                <p class="mt-2">Sirven como base sólida para las materias del núcleo más avanzadas. Muchas materias de núcleo tienen materias básicas como prerrequisito.</p>
+                <div class="faq-note">En UniApp aparecen con el tipo <code>basicas</code>.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="tipos" data-kw="sociohumano economía filosofía teología sociedad humanidades formación">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es el componente Sociohumano?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>El componente <strong>Sociohumano</strong> es la formación en ciencias sociales, humanidades y gestión que desarrolla competencias ciudadanas, éticas y de contexto. La Javeriana, como universidad jesuita, le da especial importancia a este componente como parte de la formación integral.</p>
+                <div class="faq-note">En UniApp aparecen con el tipo <code>sociohumano</code>.</div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ CALIFICACIONES Y PROMEDIOS ═══════════════ -->
+        <div class="faq-section-header mt-4" data-cat="notas">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <span>Calificaciones y promedios</span>
+        </div>
+
+        <div class="faq-item" data-cat="notas" data-kw="escala notas calificación 0 5 mínimo aprobar">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cómo es la escala de calificaciones en la Javeriana?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>La Javeriana usa una escala numérica de <strong>0.0 a 5.0</strong>:</p>
+                <div class="mt-3 space-y-1.5">
+                    <div class="flex items-center gap-3">
+                        <span class="w-16 text-xs font-bold text-green-600 dark:text-green-400">4.5 – 5.0</span>
+                        <div class="flex-1 h-2 bg-green-100 dark:bg-green-900/40 rounded-full"><div class="h-2 bg-green-500 rounded-full" style="width:100%"></div></div>
+                        <span class="text-xs text-gray-500 w-24">Excelente</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-16 text-xs font-bold text-blue-600 dark:text-blue-400">4.0 – 4.4</span>
+                        <div class="flex-1 h-2 bg-blue-100 dark:bg-blue-900/40 rounded-full"><div class="h-2 bg-blue-500 rounded-full" style="width:80%"></div></div>
+                        <span class="text-xs text-gray-500 w-24">Sobresaliente</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-16 text-xs font-bold text-accent-600 dark:text-accent-400">3.5 – 3.9</span>
+                        <div class="flex-1 h-2 bg-accent-100 dark:bg-accent-900/40 rounded-full"><div class="h-2 bg-accent-500 rounded-full" style="width:60%"></div></div>
+                        <span class="text-xs text-gray-500 w-24">Bueno</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-16 text-xs font-bold text-yellow-600 dark:text-yellow-400">3.0 – 3.4</span>
+                        <div class="flex-1 h-2 bg-yellow-100 dark:bg-yellow-900/40 rounded-full"><div class="h-2 bg-yellow-500 rounded-full" style="width:40%"></div></div>
+                        <span class="text-xs text-gray-500 w-24">Aceptable</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="w-16 text-xs font-bold text-red-600 dark:text-red-400">0.0 – 2.9</span>
+                        <div class="flex-1 h-2 bg-red-100 dark:bg-red-900/40 rounded-full"><div class="h-2 bg-red-500 rounded-full" style="width:20%"></div></div>
+                        <span class="text-xs text-gray-500 w-24">Reprobado</span>
+                    </div>
+                </div>
+                <div class="faq-note mt-3">La nota mínima para <strong>aprobar</strong> una materia es <strong>3.0</strong>. Con 2.9 o menos, la materia se pierde.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="notas" data-kw="índice académico IA promedio ponderado qué es">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es el Índice Académico (IA)?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>El <strong>Índice Académico (IA)</strong> es el promedio ponderado de todas tus calificaciones, donde cada nota se multiplica por el número de créditos de la asignatura. Es el indicador oficial del rendimiento académico en la Javeriana.</p>
+                <p class="mt-2">Existen dos variantes:</p>
+                <ul class="mt-2 space-y-1 text-sm">
+                    <li class="flex items-start gap-2"><span class="text-accent-500 font-bold mt-0.5">•</span><span><strong>IA de período:</strong> promedio de las materias cursadas en un único semestre.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-accent-500 font-bold mt-0.5">•</span><span><strong>IA acumulado:</strong> promedio de todas las materias cursadas durante toda la carrera.</span></li>
+                </ul>
+                <div class="faq-note">Ambos IA son importantes: el de período refleja tu rendimiento reciente y determina si entras en Prueba Académica; el acumulado es el que aparece en tu hoja de vida y diploma.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="notas" data-kw="calcular promedio fórmula créditos ponderado cómo">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cómo se calcula el IA correctamente?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>La fórmula del IA es:</p>
+                <div class="my-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg font-mono text-sm text-center text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700">
+                    IA = Σ (nota<sub>i</sub> × créditos<sub>i</sub>) ÷ Σ créditos<sub>i</sub>
+                </div>
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mt-3 mb-2">Ejemplo — Semestre con 3 materias:</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-gray-700">
+                                <th class="text-left px-3 py-2 rounded-tl-lg text-gray-600 dark:text-gray-300">Materia</th>
+                                <th class="text-center px-3 py-2 text-gray-600 dark:text-gray-300">Nota</th>
+                                <th class="text-center px-3 py-2 text-gray-600 dark:text-gray-300">Créditos</th>
+                                <th class="text-center px-3 py-2 rounded-tr-lg text-gray-600 dark:text-gray-300">Nota × Cr.</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                            <tr class="bg-white dark:bg-gray-800">
+                                <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Cálculo</td>
+                                <td class="px-3 py-2 text-center font-medium text-gray-800 dark:text-white">3.8</td>
+                                <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">4</td>
+                                <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">15.2</td>
+                            </tr>
+                            <tr class="bg-white dark:bg-gray-800">
+                                <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Programación</td>
+                                <td class="px-3 py-2 text-center font-medium text-gray-800 dark:text-white">4.2</td>
+                                <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">3</td>
+                                <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">12.6</td>
+                            </tr>
+                            <tr class="bg-white dark:bg-gray-800">
+                                <td class="px-3 py-2 text-gray-700 dark:text-gray-300">Economía</td>
+                                <td class="px-3 py-2 text-center font-medium text-gray-800 dark:text-white">3.5</td>
+                                <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">3</td>
+                                <td class="px-3 py-2 text-center text-gray-600 dark:text-gray-400">10.5</td>
+                            </tr>
+                            <tr class="bg-accent-50 dark:bg-accent-900/20 font-semibold">
+                                <td class="px-3 py-2 text-gray-800 dark:text-white rounded-bl-lg">Total</td>
+                                <td class="px-3 py-2 text-center text-accent-600 dark:text-accent-400">—</td>
+                                <td class="px-3 py-2 text-center text-gray-700 dark:text-gray-300">10</td>
+                                <td class="px-3 py-2 text-center text-gray-700 dark:text-gray-300 rounded-br-lg">38.3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 p-3 bg-accent-50 dark:bg-accent-900/20 rounded-lg text-center">
+                    <span class="text-sm font-bold text-accent-700 dark:text-accent-300">IA = 38.3 ÷ 10 = <span class="text-lg">3.83</span></span>
+                </div>
+                <div class="faq-note mt-3">Solo se incluyen materias con <strong>calificación numérica</strong>. Las materias con calificación "Aprobado / No Aprobado" (sin número) no afectan el IA.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="notas" data-kw="promedio período acumulado diferencia semestre">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cuál es la diferencia entre IA de período e IA acumulado?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
+                    <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800">
+                        <p class="text-xs font-bold text-blue-700 dark:text-blue-300 mb-1">IA de Período</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Promedio ponderado solo de las materias cursadas en el semestre en curso. Determina si entras en Prueba Académica ese período.</p>
+                    </div>
+                    <div class="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800">
+                        <p class="text-xs font-bold text-purple-700 dark:text-purple-300 mb-1">IA Acumulado</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Promedio ponderado de todas las materias cursadas durante toda la carrera. Es el que aparece en tu hoja de vida, certificados y diploma.</p>
+                    </div>
+                </div>
+                <div class="faq-note mt-3">UniApp calcula el IA acumulado usando todas las materias con calificación registrada en el módulo Semestre.</div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SITUACIÓN ACADÉMICA ═══════════════ -->
+        <div class="faq-section-header mt-4" data-cat="situacion">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+            <span>Situación académica</span>
+        </div>
+
+        <div class="faq-item" data-cat="situacion" data-kw="prueba académica qué es alerta rendimiento bajo 3.0">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es la Prueba Académica?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>La <strong>Prueba Académica</strong> es una alerta formal de la universidad que se activa cuando el rendimiento académico cae por debajo del mínimo requerido. Un estudiante entra en Prueba Académica cuando ocurre alguna de estas condiciones:</p>
+                <div class="mt-3 space-y-2">
+                    <div class="flex items-center gap-3 p-2.5 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <span class="text-xs font-bold text-red-700 dark:text-red-400 w-32 flex-shrink-0">IA acumulado</span>
+                        <span class="text-xs text-gray-700 dark:text-gray-300">cae por debajo de <strong>3.25</strong>.</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-2.5 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <span class="text-xs font-bold text-red-700 dark:text-red-400 w-32 flex-shrink-0">IA de período</span>
+                        <span class="text-xs text-gray-700 dark:text-gray-300">cae por debajo de <strong>2.5</strong> en cualquier semestre.</span>
+                    </div>
+                </div>
+                <div class="faq-note mt-3">En Prueba Académica el estudiante <strong>puede continuar estudiando</strong>, pero debe recuperar sus promedios en el siguiente período para salir de esta situación.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="situacion" data-kw="salir prueba académica recuperar IA recuperación">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cómo se sale de la Prueba Académica?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Para salir de Prueba Académica generalmente se requiere en el período siguiente:</p>
+                <ul class="mt-3 space-y-2">
+                    <li class="flex items-start gap-2"><span class="text-green-500 font-bold">✓</span><span class="text-sm">Obtener un <strong>IA de período ≥ 3.0</strong>.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-500 font-bold">✓</span><span class="text-sm">No perder ninguna asignatura adicional durante ese período.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-green-500 font-bold">✓</span><span class="text-sm">Cumplir con el plan de mejoramiento establecido por el decano académico de tu facultad.</span></li>
+                </ul>
+                <div class="faq-note mt-3">Si no se sale de Prueba Académica en el siguiente período, se puede estar en riesgo de exclusión del programa. Consulta siempre con tu asesor académico.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="situacion" data-kw="exclusión programa pérdida cupo excluido cancelar matrícula">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cuándo se puede ser excluido de un programa?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>La <strong>exclusión del programa</strong> es la pérdida del cupo académico. Puede ocurrir cuando:</p>
+                <ul class="mt-3 space-y-2">
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0"></span>
+                        <span class="text-sm">El estudiante en Prueba Académica <strong>no logra recuperar los promedios mínimos</strong> (IA acumulado ≥ 3.25 e IA de período ≥ 2.5) en el período siguiente.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0"></span>
+                        <span class="text-sm">Acumula un número excesivo de créditos reprobados que hace imposible completar el programa en el tiempo máximo establecido.</span>
+                    </li>
+                    <li class="flex items-start gap-2.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 mt-2 flex-shrink-0"></span>
+                        <span class="text-sm">No cumple con los compromisos del plan de mejoramiento establecido por la facultad.</span>
+                    </li>
+                </ul>
+                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg mt-3">
+                    <p class="text-xs text-amber-800 dark:text-amber-300"><strong>⚠️ Importante:</strong> La exclusión puede contemplar opciones de recurso o cambio de programa bajo ciertas condiciones. Consulta el Reglamento Estudiantil vigente y habla con la Decanatura antes de que sea demasiado tarde.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="situacion" data-kw="veces materia mismo curso repetir perder tercera segunda">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cuántas veces puedo cursar la misma materia?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>El Reglamento Estudiantil de la Javeriana <strong>no establece un límite máximo</strong> de veces para cursar una materia reprobada. Puedes repetirla cuantas veces sea necesario para aprobarla.</p>
+                <p class="mt-2">Sin embargo, debes tener en cuenta dos consecuencias importantes al repetir una materia:</p>
+                <div class="mt-3 space-y-2">
+                    <div class="flex items-start gap-3 p-2.5 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
+                        <span class="text-amber-500 font-bold mt-0.5 flex-shrink-0">⚠</span>
+                        <span class="text-xs text-gray-700 dark:text-gray-300"><strong>Afecta tu IA acumulado:</strong> tanto la nota reprobada como la nueva nota aprobatoria quedan registradas en tu historial y se incluyen en el cálculo del promedio ponderado acumulado.</span>
+                    </div>
+                    <div class="flex items-start gap-3 p-2.5 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <span class="text-red-500 font-bold mt-0.5 flex-shrink-0">⚠</span>
+                        <span class="text-xs text-gray-700 dark:text-gray-300"><strong>Riesgo de Prueba Académica:</strong> si al repetir la materia tus promedios caen por debajo de 3.25 (IA acumulado) o 2.5 (IA de período), entrarás en Prueba Académica.</span>
+                    </div>
+                </div>
+                <div class="faq-note mt-3">UniApp te muestra el simulador de pérdida de materias para visualizar el impacto en el pensum antes de que esto ocurra.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="situacion" data-kw="nota perdida IA acumulado historial cuenta">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Las materias perdidas afectan el IA acumulado?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p><strong>Sí.</strong> Las materias perdidas (nota &lt; 3.0) se incluyen en el cálculo del IA acumulado. Una nota baja en una materia de muchos créditos tiene un impacto significativo en el promedio.</p>
+                <p class="mt-2">Si cursas nuevamente la materia y la apruebas, la nueva nota también se incluye — pero la pérdida anterior <strong>no se borra del historial</strong>; ambas cuentan en el IA acumulado (salvo que tu programa tenga una política específica de reemplazo de nota, lo cual debes verificar con la Decanatura).</p>
+                <div class="faq-note mt-3">Esta es la razón por la que el IA de período puede recuperarse rápido, pero el IA acumulado sube más lentamente después de una pérdida.</div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ REQUISITOS DE GRADO ═══════════════ -->
+        <div class="faq-section-header mt-4" data-cat="grado">
+            <span class="w-2.5 h-2.5 rounded-full bg-teal-500"></span>
+            <span>Requisitos de grado</span>
+        </div>
+
+        <div class="faq-item" data-cat="grado" data-kw="graduarse créditos total cuántos requisito">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cuántos créditos necesito para graduarme?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>El número de créditos exigidos varía por programa. Para los programas disponibles en UniApp:</p>
+                <div class="mt-3 space-y-2">
+                    <div class="flex items-center justify-between p-3 bg-teal-50 dark:bg-teal-900/20 rounded-lg border border-teal-100 dark:border-teal-800">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">💻</span>
+                            <span class="text-sm font-medium text-gray-800 dark:text-white">Ingeniería de Sistemas</span>
+                        </div>
+                        <span class="text-sm font-bold text-teal-700 dark:text-teal-300">138 créditos</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg border border-pink-100 dark:border-pink-800">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">📊</span>
+                            <span class="text-sm font-medium text-gray-800 dark:text-white">Ciencia de Datos</span>
+                        </div>
+                        <span class="text-sm font-bold text-pink-700 dark:text-pink-300">134 créditos</span>
+                    </div>
+                </div>
+                <div class="faq-note mt-3">Además de los créditos, debes cumplir con los requisitos adicionales de grado de tu facultad: trabajo de grado, inglés B2, y haber cursado materias de todas las áreas requeridas.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="grado" data-kw="inglés b2 certificación idioma requisito">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es el requisito de inglés B2?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>La Javeriana exige una <strong>certificación de inglés nivel B2</strong> (según el Marco Común Europeo de Referencia para las Lenguas) como requisito de grado para la mayoría de los programas de ingeniería y ciencias.</p>
+                <p class="mt-2">Puedes cumplirlo con:</p>
+                <ul class="mt-2 space-y-1 text-sm">
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span><strong>Examen PUJA</strong> — prueba interna de la Javeriana.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span><strong>Certificaciones externas</strong> reconocidas: IELTS (5.5+), TOEFL iBT (72+), Cambridge B2 First, etc.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span>Haber cursado materias de inglés en la Javeriana hasta el nivel requerido.</span></li>
+                </ul>
+                <div class="faq-note mt-3">Se recomienda gestionar este requisito desde semestres anteriores para no retrasarte en la fecha de grado.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="grado" data-kw="trabajo grado tesis proyecto modalidades pasantía">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es el Trabajo de Grado?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>El <strong>Trabajo de Grado</strong> es el proyecto final que demuestra las competencias adquiridas durante la carrera. Se cursa en los últimos semestres (usualmente Seminario de Trabajo de Grado + Trabajo de Grado) y requiere haber completado un porcentaje significativo del plan de estudios.</p>
+                <p class="mt-2">Modalidades más comunes en Ingeniería y Ciencia de Datos:</p>
+                <ul class="mt-2 space-y-1 text-sm">
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span><strong>Proyecto de investigación</strong> — desarrollo de un trabajo investigativo original.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span><strong>Pasantía empresarial</strong> — proyecto aplicado en una empresa, con tutoría académica.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span><strong>Proyecto de emprendimiento</strong> — creación de una startup o producto tecnológico.</span></li>
+                    <li class="flex items-start gap-2"><span class="text-teal-500 font-bold">•</span><span><strong>Monografía</strong> — revisión bibliográfica profunda sobre un tema especializado.</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ═══════════════ PENSUM Y CRÉDITOS ═══════════════ -->
+        <div class="faq-section-header mt-4" data-cat="pensum">
+            <span class="w-2.5 h-2.5 rounded-full bg-accent-500"></span>
+            <span>Pensum y créditos académicos</span>
+        </div>
+
+        <div class="faq-item" data-cat="pensum" data-kw="crédito académico qué es horas trabajo">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es un crédito académico?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Un <strong>crédito académico</strong> equivale a <strong>48 horas totales de trabajo del estudiante</strong> durante el semestre, incluyendo horas presenciales de clase y trabajo independiente (estudio, tareas, proyectos).</p>
+                <p class="mt-2">La relación típica es: <strong>1 crédito = 1 hora de clase presencial + 2 horas de trabajo independiente por semana</strong> durante 16 semanas de semestre.</p>
+                <div class="mt-3 grid grid-cols-3 gap-2 text-center">
+                    <div class="p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <p class="text-lg font-bold text-accent-600 dark:text-accent-400">1</p>
+                        <p class="text-xs text-gray-500">hora/semana clase</p>
+                    </div>
+                    <div class="p-2 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <p class="text-lg font-bold text-accent-600 dark:text-accent-400">+2</p>
+                        <p class="text-xs text-gray-500">horas/semana estudio</p>
+                    </div>
+                    <div class="p-2 bg-accent-50 dark:bg-accent-900/20 rounded-lg border border-accent-200 dark:border-accent-700">
+                        <p class="text-lg font-bold text-accent-600 dark:text-accent-400">= 1 cr</p>
+                        <p class="text-xs text-gray-500">por semestre</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="pensum" data-kw="prerrequisito requisito obligatorio antes cursar">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es un prerrequisito?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Un <strong>prerrequisito</strong> es una materia que debes haber <strong>aprobado</strong> (nota ≥ 3.0) antes de poder inscribir otra asignatura. Si no has aprobado el prerrequisito, no podrás inscribir la materia dependiente.</p>
+                <p class="mt-2">Los prerrequisitos aseguran que tienes las bases necesarias para cursar con éxito una materia más avanzada. Por ejemplo, no puedes ver Teoría de Probabilidad sin haber aprobado Cálculo Vectorial.</p>
+                <div class="faq-note">UniApp muestra la cadena completa de prerrequisitos de cada materia y valida que el orden del pensum sea consistente.</div>
+            </div>
+        </div>
+
+        <div class="faq-item" data-cat="pensum" data-kw="correquisito mismo semestre simultáneo">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Qué es un correquisito?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>Un <strong>correquisito</strong> es una materia que debes cursar en el <strong>mismo semestre</strong> que otra asignatura. Ambas deben inscribirse simultáneamente en el período académico.</p>
+                <p class="mt-2">A diferencia del prerrequisito (que debe estar aprobado antes), el correquisito puede estar siendo cursado al mismo tiempo.</p>
+            </div>
+        </div>
+
+<div class="faq-item" data-cat="pensum" data-kw="tiempo máximo carrera semestres plazo">
+            <button class="faq-q" onclick="toggleFaq(this)">
+                <span>¿Cuánto tiempo tengo para completar mi carrera?</span>
+                <svg class="faq-chevron w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+            <div class="faq-a">
+                <p>La Javeriana establece un <strong>tiempo máximo</strong> para completar cada programa, generalmente el doble de la duración nominal del plan de estudios. Para una carrera de 8 semestres, el tiempo máximo es típicamente de <strong>16 semestres</strong> (8 años).</p>
+                <p class="mt-2">Superar este límite o acumular demasiados créditos reprobados puede ser causal de exclusión del programa. Consulta el reglamento específico de tu facultad para los plazos exactos.</p>
+                <div class="faq-note">La "Proyección de grado" en UniApp te muestra una estimación de cuándo te graduarías si avanzas al ritmo actual.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- No results -->
+    <div id="faq-no-results" class="hidden text-center py-16">
+        <svg class="mx-auto w-12 h-12 text-gray-300 dark:text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <p class="text-sm text-gray-500 dark:text-gray-400">No se encontraron preguntas para "<span id="no-results-term"></span>"</p>
+        <button onclick="clearSearch()" class="mt-2 text-xs text-accent-500 hover:text-accent-600 underline underline-offset-2">Limpiar búsqueda</button>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+        <div class="flex items-start gap-3">
+            <svg class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">Esta información es orientativa y se basa en el Reglamento Estudiantil de la Pontificia Universidad Javeriana (Bogotá). Las normas pueden variar por facultad o actualizarse. Siempre verifica con la Decanatura o el Reglamento Estudiantil vigente ante dudas específicas.</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .faq-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.375rem 0.875rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border-radius: 9999px;
+        border: 1px solid;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        border-color: rgb(229 231 235);
+        background-color: white;
+        color: rgb(75 85 99);
+    }
+    [data-theme="dark"] .faq-pill {
+        border-color: rgb(55 65 81);
+        background-color: rgb(31 41 55);
+        color: rgb(156 163 175);
+    }
+    .faq-pill:hover, .faq-pill.active {
+        border-color: #5091AF;
+        background-color: rgba(80, 145, 175, 0.1);
+        color: #3a7a9c;
+    }
+    [data-theme="dark"] .faq-pill:hover, [data-theme="dark"] .faq-pill.active {
+        color: #7fb8d0;
+        background-color: rgba(80, 145, 175, 0.15);
+    }
+
+    .faq-section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgb(107 114 128);
+    }
+    [data-theme="dark"] .faq-section-header { color: rgb(107 114 128); }
+
+    .faq-item {
+        background-color: white;
+        border: 1px solid rgb(243 244 246);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        transition: box-shadow 0.15s ease;
+    }
+    [data-theme="dark"] .faq-item {
+        background-color: rgb(31 41 55);
+        border-color: rgb(55 65 81);
+    }
+    .faq-item:hover { box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+    [data-theme="dark"] .faq-item:hover { box-shadow: 0 1px 6px rgba(0,0,0,0.3); }
+
+    .faq-q {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: rgb(17 24 39);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+    [data-theme="dark"] .faq-q { color: rgb(249 250 251); }
+    .faq-q:hover { background-color: rgb(249 250 251); }
+    [data-theme="dark"] .faq-q:hover { background-color: rgba(255,255,255,0.04); }
+    .faq-q.open { color: #3a7a9c; }
+    [data-theme="dark"] .faq-q.open { color: #7fb8d0; }
+
+    .faq-chevron { transition: transform 0.2s ease; flex-shrink: 0; }
+    .faq-q.open .faq-chevron { transform: rotate(180deg); }
+
+    .faq-a {
+        display: none;
+        padding: 0 1.25rem 1.25rem;
+        font-size: 0.8125rem;
+        color: rgb(55 65 81);
+        line-height: 1.6;
+        border-top: 1px solid rgb(243 244 246);
+        padding-top: 1rem;
+    }
+    [data-theme="dark"] .faq-a {
+        color: rgb(209 213 219);
+        border-top-color: rgb(55 65 81);
+    }
+    .faq-a.open { display: block; }
+
+    .faq-note {
+        margin-top: 0.75rem;
+        padding: 0.625rem 0.875rem;
+        background-color: rgb(241 245 249);
+        border-left: 3px solid #5091AF;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        color: rgb(71 85 105);
+    }
+    [data-theme="dark"] .faq-note {
+        background-color: rgba(80, 145, 175, 0.1);
+        color: rgb(148 163 184);
+    }
+</style>
+<script>
+    function toggleFaq(btn) {
+        const answer = btn.nextElementSibling;
+        const isOpen = btn.classList.contains('open');
+        // Close all others
+        document.querySelectorAll('.faq-q.open').forEach(b => {
+            b.classList.remove('open');
+            b.nextElementSibling.classList.remove('open');
+        });
+        if (!isOpen) {
+            btn.classList.add('open');
+            answer.classList.add('open');
+        }
+    }
+
+    // Category filter
+    document.querySelectorAll('.faq-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.faq-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            filterFaq();
+        });
+    });
+
+    // Search
+    const searchInput = document.getElementById('faq-search');
+    searchInput.addEventListener('input', filterFaq);
+
+    function filterFaq() {
+        const cat = document.querySelector('.faq-pill.active')?.dataset.cat || 'all';
+        const term = searchInput.value.toLowerCase().trim();
+
+        let visibleCount = 0;
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const matchCat = cat === 'all' || item.dataset.cat === cat;
+            const matchTerm = !term ||
+                item.querySelector('.faq-q span').textContent.toLowerCase().includes(term) ||
+                (item.dataset.kw || '').includes(term) ||
+                (item.querySelector('.faq-a')?.textContent.toLowerCase().includes(term));
+
+            const show = matchCat && matchTerm;
+            item.style.display = show ? '' : 'none';
+            if (show) visibleCount++;
+        });
+
+        // Show/hide section headers
+        document.querySelectorAll('.faq-section-header').forEach(header => {
+            const headerCat = header.dataset.cat;
+            const catMatch = cat === 'all' || cat === headerCat;
+            // Check if any visible items in this cat
+            const hasVisible = [...document.querySelectorAll(`.faq-item[data-cat="${headerCat}"]`)]
+                .some(i => i.style.display !== 'none');
+            header.style.display = (catMatch && hasVisible && !term) ? '' : 'none';
+        });
+
+        const noResults = document.getElementById('faq-no-results');
+        if (visibleCount === 0) {
+            noResults.classList.remove('hidden');
+            document.getElementById('no-results-term').textContent = term;
+        } else {
+            noResults.classList.add('hidden');
+        }
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        filterFaq();
+    }
+</script>
+{% endblock %}

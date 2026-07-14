@@ -53,12 +53,14 @@ def create_app(config_name: str = None) -> Flask:
     from app.blueprints.schedule import schedule_bp
     from app.blueprints.api import api_bp
     from app.blueprints.auth import auth_bp
-    
+    from app.blueprints.faq import faq_bp
+
     app.register_blueprint(pensum_bp)
     app.register_blueprint(semester_bp)
     app.register_blueprint(schedule_bp)
     app.register_blueprint(api_bp, url_prefix='/api')
     app.register_blueprint(auth_bp)
+    app.register_blueprint(faq_bp)
     
     # Context processor for global template variables
     @app.context_processor

@@ -53,3 +53,6 @@ tests/
 
 # Logs
 *.log
+
+# Claude Code (session data, memory, skills — local only)
+.claude/
