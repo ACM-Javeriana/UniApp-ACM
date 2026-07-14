@@ -1907,12 +1907,15 @@
             const status = statusConfig[m.estado] || statusConfig.pending;
             const cal = storage.getCalificacion(m.codigo);
             const nota = cal?.nota;
+            const hasCustomColor = m.color && m.color.startsWith('#');
+            const colorDot = hasCustomColor ? `<span class="inline-block w-2.5 h-2.5 rounded-full mr-2 flex-shrink-0" style="background-color: ${m.color};"></span>` : '';
+            const rowStyle = hasCustomColor ? `style="border-left: 3px solid ${m.color};"` : '';
             
             return `
-                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" data-codigo="${m.codigo}" onclick="openEditMateriaModal('${m.codigo}')">
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" data-codigo="${m.codigo}" onclick="openEditMateriaModal('${m.codigo}')" ${rowStyle}>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${m.semestre}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">${m.codigo}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-200">${m.nombre}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-200"><div class="flex items-center">${colorDot}${m.nombre}</div></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">${m.creditos}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${status.bg} ${status.text}">${status.label}</span>
@@ -2018,9 +2021,14 @@
                     const isDraggable = m.estado !== 'passed' && m.estado !== 'failed';
                     const canSimulate = m.estado === 'pending' && canEnrollInSimulation(m.codigo).valid;
                     const isSimulated = simulatedCourses.includes(m.codigo);
+                    const hasCustomColor = m.color && m.color.startsWith('#');
+                    
+                    const cardBorderClass = hasCustomColor ? '' : st.border;
+                    const cardBgClass = hasCustomColor ? '' : st.bg;
+                    const cardStyle = hasCustomColor ? `style="border-left-color: ${m.color}; background-color: ${m.color}15;"` : '';
                     
                     html += `
-                        <div class="course-card p-2 rounded-lg border-l-4 ${st.border} ${st.bg} hover:shadow-sm transition-all group relative ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''} ${isSimulated ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}"
+                        <div class="course-card p-2 rounded-lg border-l-4 ${cardBorderClass} ${cardBgClass} hover:shadow-sm transition-all group relative ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''} ${isSimulated ? 'ring-2 ring-indigo-500 ring-offset-1' : ''}" ${cardStyle}
                              draggable="${isDraggable}"
                              data-codigo="${m.codigo}"
                              ondragstart="handleDragStart(event, '${m.codigo}')"
