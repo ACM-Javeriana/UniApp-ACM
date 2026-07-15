@@ -1051,9 +1051,7 @@
                             <select id="materia-status"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-accent-500">
                                 <option value="pending">Pendiente</option>
-                                <option value="enrolled">En curso</option>
-                                <option value="passed">Aprobada</option>
-                                <option value="failed">Reprobada</option>
+                                <option value="enrolled">En curso</option>                   
                                 <option value="dropped">Retirada</option>
                             </select>
                         </div>
@@ -2581,8 +2579,13 @@
         
         // Show and populate status/grade section
         document.getElementById('materia-status-grade-section').classList.remove('hidden');
-        document.getElementById('materia-status').value = materia.estado || 'pending';
-        
+        const manualStatuses = ['pending', 'enrolled', 'dropped'];
+        document.getElementById('materia-status').value = manualStatuses.includes(materia.estado) ? materia.estado : 'pending';
+        const gradeEl = document.getElementById('materia-grade');
+        const isDropped = materia.estado === 'dropped';
+        gradeEl.disabled = isDropped;
+        gradeEl.classList.toggle('opacity-50',isDropped);
+        gradeEl.classList.toggle('cursor-not-allowed', isDropped);
         // Get calificacion if exists
         const cal = storage.getCalificacion(codigo);
         document.getElementById('materia-grade').value = cal?.nota ?? '';
@@ -2658,10 +2661,19 @@
             
             // Get status (only when editing)
             let estado = 'pending';
+            let notaToSave = null;
             if (editCode) {
-                estado = document.getElementById('materia-status').value;
+                const gradeInput = document.getElementById('materia-grade').value;
+                if(gradeInput !== '') {
+                    const nota = parseFloat(gradeInput);
+                    if(!isNaN(nota) && nota >= 0 && nota <=5){
+                        notaToSave = nota;
+                        estado = nota >= 3.0 ? 'passed': 'failed';
+                    }
+                } else {
+                    estado = document.getElementById('materia-status').value
+                }
             }
-            
             const materia = {
                 codigo: editCode || codigo,
                 nombre,
@@ -2672,31 +2684,22 @@
                 color,
                 tipo,
                 estado
-            };
-            
+            }; 
             const prevEstado = editCode ? storage.getMateria(editCode)?.estado : null;
             storage.saveMateria(materia);
-            
-            // Save grade if editing and value provided
-            if (editCode) {
-                const gradeInput = document.getElementById('materia-grade').value;
-                if (gradeInput !== '') {
-                    const nota = parseFloat(gradeInput);
-                    if (!isNaN(nota) && nota >= 0 && nota <= 5) {
-                        storage.saveCalificacion({
-                            codigo_materia: editCode,
-                            nota: nota,
-                            fecha: new Date().toISOString()
-                        });
-                    }
+            if(editCode) {
+                if (notaToSave !== null) {
+                    storage.saveCalificacion({
+                        codigo_materia: editCode,
+                        nota: notaToSave,
+                        fecha: new Date().toISOString()
+                    });
                 }
-                
-                // Handle failed subject: create a copy in the next semester
-                if (estado === 'failed') {
+                const prevWasFailed = prevEstado === 'failed' || prevEstado === 'dropped';
+                if((estado === 'failed' || estado === 'dropped') && !prevWasFailed){
                     handleFailedSubject(materia);
                 }
-                
-                if (estado === 'passed' && prevEstado !== 'passed') {
+                if(estado === 'passed' && prevEstado !== 'passed') {
                     handlePassedSubject(materia);
                 }
             }
@@ -2719,6 +2722,16 @@
             }
             lastTipo = this.value;
         });
+        const statusSelect = document.getElementById('materia-status');
+        const gradeInput = document.getElementById('materia-grade');
+        function syncGradeWithStatus() {
+            const isDropped = statusSelect.value === 'dropped';
+            gradeInput.disabled = isDropped;
+            gradeInput.classList.toggle('opacity-50', isDropped);
+            gradeInput.classList.toggle('cursor-not-allowed', isDropped);
+            if(isDropped) gradeInput.value = '';
+        }
+        statusSelect.addEventListener('change', syncGradeWithStatus);
     }
     
     function deleteMateria(codigo) {
