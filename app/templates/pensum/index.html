@@ -2674,6 +2674,7 @@
                 estado
             };
             
+            const prevEstado = editCode ? storage.getMateria(editCode)?.estado : null;
             storage.saveMateria(materia);
             
             // Save grade if editing and value provided
@@ -2693,6 +2694,10 @@
                 // Handle failed subject: create a copy in the next semester
                 if (estado === 'failed') {
                     handleFailedSubject(materia);
+                }
+                
+                if (estado === 'passed' && prevEstado !== 'passed') {
+                    handlePassedSubject(materia);
                 }
             }
             
@@ -2762,6 +2767,73 @@
         materiasList
             .filter(m =>(m.correquisitos || []).includes(materia.codigo) && m.estado === 'pending' && m.semestre < actual)
             .forEach(co => cascadeMove(co,actual,materiasList,visited));
+    }
+
+    function collectRepetitionChain(originalCodigo, allMaterias){
+        const result = [];
+        const queue = [originalCodigo];
+        while(queue.length > 0) {
+            const cod = queue.shift();
+            allMaterias.filter(m => m.originalCodigo === cod).forEach(r => {
+                result.push(r.codigo);
+                queue.push(r.codigo);
+            });
+        }
+        return result;
+    }
+    function cascadeMoveBack(materia, allMaterias, visited = new Set()) {
+        if (visited.has(materia.codigo) || materia.estado !== 'pending') return;
+        visited.add(materia.codigo);
+
+        let minSem = 1;
+        (materia.prerrequisitos || []).forEach(preqCod => {
+            const prereq = allMaterias.find(m => m.codigo === preqCod);
+            if (prereq) minSem = Math.max(minSem, prereq.semestre + 1);
+        });
+
+        if (materia.semestre > minSem) {
+            const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+            const maxCredits = config.max_creditos_semestre || 24;
+            for (let s = minSem; s < materia.semestre; s++) {
+                const used = allMaterias
+                    .filter(x => x.semestre === s && x.codigo !== materia.codigo)
+                    .reduce((sum, x) => sum + (x.creditos || 0), 0);
+                if (used + (materia.creditos || 0) <= maxCredits) {
+                    materia.semestre = s;
+                    storage.saveMateria(materia);
+                    break;
+                }
+            }
+        }
+        allMaterias
+            .filter(m => (m.prerrequisitos || []).includes(materia.codigo) && m.estado === 'pending')
+            .forEach(dep => cascadeMoveBack(dep, allMaterias, visited));
+    }
+    function handlePassedSubject(passedMateria) {
+        const allMaterias = storage.getMaterias();
+        const repChain = collectRepetitionChain(passedMateria.codigo, allMaterias);
+        if (repChain.length === 0) return;
+
+        const freshMaterias = storage.getMaterias();
+        repChain.forEach(repCod => {
+            freshMaterias.forEach(m => {
+                let changed = false;
+                if ((m.prerrequisitos || []).includes(repCod)) {
+                    m.prerrequisitos = m.prerrequisitos.filter(p => p !== repCod);
+                    changed = true;
+                }
+                if ((m.correquisitos || []).includes(repCod)) {
+                    m.correquisitos = m.correquisitos.filter(p => p !== repCod);
+                    changed = true;
+                }
+                if (changed) storage.saveMateria(m);
+            });
+            storage.deleteMateria(repCod);
+        });
+        const updatedMaterias = storage.getMaterias();
+        updatedMaterias
+            .filter(m => (m.prerrequisitos || []).includes(passedMateria.codigo) && m.estado === 'pending')
+            .forEach(dep => cascadeMoveBack(dep, updatedMaterias));
     }
     // Handle failed subject: create a copy in the next semester and update dependencies
     function handleFailedSubject(failedMateria) {
