@@ -252,16 +252,16 @@ const Semester = {
         const statusSelect = document.getElementById('courseStatus');
         const gradeInput = document.getElementById('courseGrade');
 
-        // Update status
+        // Update status from dropdown (only pending/enrolled/dropped)
         if (statusSelect) {
             this.selectedCourse.estado = statusSelect.value;
-            storage.saveMateria(this.selectedCourse);
         }
 
-        // Update grade
+        // Update grade and auto-derive passed/failed
         if (gradeInput && gradeInput.value !== '') {
             const nota = parseFloat(gradeInput.value);
             if (!isNaN(nota) && nota >= 0 && nota <= 5) {
+                this.selectedCourse.estado = nota >= 3 ? 'passed' : 'failed';
                 storage.saveCalificacion({
                     codigo_materia: this.selectedCourse.codigo,
                     nota: nota,
@@ -269,6 +269,8 @@ const Semester = {
                 });
             }
         }
+
+        storage.saveMateria(this.selectedCourse);
 
         this.hideCourseModal();
         this.loadSemester();
@@ -282,7 +284,7 @@ const Semester = {
         const materia = this.materias.find(m => m.codigo === codigo);
         if (!materia) return;
 
-        const statusOrder = ['pending', 'enrolled', 'passed', 'failed', 'dropped'];
+        const statusOrder = ['pending', 'enrolled', 'dropped'];
         const currentIndex = statusOrder.indexOf(materia.estado || 'pending');
         const nextIndex = (currentIndex + 1) % statusOrder.length;
         
