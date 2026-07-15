@@ -29,6 +29,7 @@ def try_float(val:str)-> Optional[float]:
     except (ValueError,TypeError):
         return None
 
+Historial_Marker = 'Historial de Cursos'
 def parse_progress_report_pdf(pdf_bytes: bytes) -> dict:
     try:
         import pdfplumber
@@ -36,25 +37,22 @@ def parse_progress_report_pdf(pdf_bytes: bytes) -> dict:
         return {'error': 'error in dependency pdfplumber'}
 
     with pdfplumber.open(io.BytesIO(pdf_bytes)) as pdf:
-        last_page = pdf.pages[-1]
-        tables=last_page.extract_tables({
-            'vertical_strategy': 'lines',
-            'horizontal_strategy': 'lines',
-        })
-        raw_rows= []
-        if tables:
-            for table in tables:
-                for row in table:
-                    if not row:
-                        continue
-                    first = str(row[0] or '').strip()
-                    if first in ('Ciclo Lectivo', 'Ciclo', ''):
-                        continue
-                    raw_rows.append([str(c or '').strip() for c in row])
-
-        if not raw_rows:
-            text= last_page.extract_text() or ''
-            raw_rows = parse_from_text(text)
+        start= None
+        for i, page in enumerate(pdf.pages):
+            if Historial_Marker in (page.extract_text() or ''):
+                start = i
+                break
+        
+        if start is None:
+            return {'error': f'it cannot be finded the course historial in PDF' }
+        
+        combined_text = ''
+        for offset, page in enumerate(pdf.pages[start:]):
+            text = page.extract_text() or ''
+            if offset == 0:
+                text = text[text.find(Historial_Marker):]
+            combined_text += '\n' + text
+    raw_rows = parse_from_text(combined_text)    
     return build_output(raw_rows)
 
 def parse_from_text(text:str) -> list:
