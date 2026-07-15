@@ -1051,7 +1051,7 @@
                             <select id="materia-status"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-accent-500">
                                 <option value="pending">Pendiente</option>
-                                <option value="enrolled">En curso</option>                   
+                                <option value="enrolled">En curso</option>
                                 <option value="dropped">Retirada</option>
                             </select>
                         </div>
@@ -1583,6 +1583,13 @@
         loadPensumData();
         updatePlanSelectorUI();
         closePlanDropdown();
+        // Rebuild graph if currently visible
+        if (currentView === 'graph' && graphState.canvas) {
+            buildGraphData();
+            calculateNodePositions();
+            findBottlenecks();
+            drawGraph();
+        }
     });
     
     // ==================== PLAN SELECTOR FUNCTIONS ====================
@@ -2674,6 +2681,18 @@
                     estado = document.getElementById('materia-status').value
                 }
             }
+            
+            // Auto-derive passed/failed from grade
+            const gradeInput = document.getElementById('materia-grade');
+            const gradeValue = gradeInput ? gradeInput.value : '';
+            let nota = null;
+            if (gradeValue !== '') {
+                nota = parseFloat(gradeInput.value);
+                if (!isNaN(nota) && nota >= 0 && nota <= 5) {
+                    estado = nota >= 3 ? 'passed' : 'failed';
+                }
+            }
+            
             const materia = {
                 codigo: editCode || codigo,
                 nombre,
@@ -2687,16 +2706,19 @@
             }; 
             const prevEstado = editCode ? storage.getMateria(editCode)?.estado : null;
             storage.saveMateria(materia);
-            if(editCode) {
-                if (notaToSave !== null) {
-                    storage.saveCalificacion({
-                        codigo_materia: editCode,
-                        nota: notaToSave,
-                        fecha: new Date().toISOString()
-                    });
-                }
-                const prevWasFailed = prevEstado === 'failed' || prevEstado === 'dropped';
-                if((estado === 'failed' || estado === 'dropped') && !prevWasFailed){
+            
+            // Save grade if editing and value provided
+            if (editCode && nota !== null) {
+                storage.saveCalificacion({
+                    codigo_materia: editCode,
+                    nota: nota,
+                    fecha: new Date().toISOString()
+                });
+            }
+            
+            // Handle passed/failed side effects
+            if (editCode) {
+                if (estado === 'failed' && prevEstado !== 'failed') {
                     handleFailedSubject(materia);
                 }
                 if(estado === 'passed' && prevEstado !== 'passed') {
@@ -4587,8 +4609,9 @@
     }
     
     function findBottlenecks() {
-        // Find nodes that unlock the most other nodes
+        // Find nodes that unlock the most other nodes (excluding passed ones)
         const bottlenecks = graphState.nodes
+            .filter(node => node.status !== 'passed')
             .map(node => ({
                 node,
                 dependentCount: getAllDependents(node.id).size
@@ -4940,13 +4963,16 @@
         console.log('Stats view initialized');
     }
     
-    // Redraw charts when theme changes
+    // Redraw charts and graph when theme changes
     window.addEventListener('themechange', () => {
         if (currentView === 'stats') {
             renderGPAChart();
             renderCreditsChart();
             renderGradesChart();
             renderTypesChart();
+        }
+        if (currentView === 'graph' && graphState.canvas) {
+            drawGraph();
         }
     });
     
