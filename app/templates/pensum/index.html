@@ -2586,8 +2586,13 @@
         
         // Show and populate status/grade section
         document.getElementById('materia-status-grade-section').classList.remove('hidden');
-        document.getElementById('materia-status').value = materia.estado || 'pending';
-        
+        const manualStatuses = ['pending', 'enrolled', 'dropped'];
+        document.getElementById('materia-status').value = manualStatuses.includes(materia.estado) ? materia.estado : 'pending';
+        const gradeEl = document.getElementById('materia-grade');
+        const isDropped = materia.estado === 'dropped';
+        gradeEl.disabled = isDropped;
+        gradeEl.classList.toggle('opacity-50',isDropped);
+        gradeEl.classList.toggle('cursor-not-allowed', isDropped);
         // Get calificacion if exists
         const cal = storage.getCalificacion(codigo);
         document.getElementById('materia-grade').value = cal?.nota ?? '';
@@ -2663,8 +2668,18 @@
             
             // Get status (only when editing)
             let estado = 'pending';
+            let notaToSave = null;
             if (editCode) {
-                estado = document.getElementById('materia-status').value;
+                const gradeInput = document.getElementById('materia-grade').value;
+                if(gradeInput !== '') {
+                    const nota = parseFloat(gradeInput);
+                    if(!isNaN(nota) && nota >= 0 && nota <=5){
+                        notaToSave = nota;
+                        estado = nota >= 3.0 ? 'passed': 'failed';
+                    }
+                } else {
+                    estado = document.getElementById('materia-status').value
+                }
             }
             
             // Auto-derive passed/failed from grade
@@ -2688,8 +2703,7 @@
                 color,
                 tipo,
                 estado
-            };
-            
+            }; 
             const prevEstado = editCode ? storage.getMateria(editCode)?.estado : null;
             storage.saveMateria(materia);
             
@@ -2707,8 +2721,7 @@
                 if (estado === 'failed' && prevEstado !== 'failed') {
                     handleFailedSubject(materia);
                 }
-                
-                if (estado === 'passed' && prevEstado !== 'passed') {
+                if(estado === 'passed' && prevEstado !== 'passed') {
                     handlePassedSubject(materia);
                 }
             }
@@ -2731,6 +2744,16 @@
             }
             lastTipo = this.value;
         });
+        const statusSelect = document.getElementById('materia-status');
+        const gradeInput = document.getElementById('materia-grade');
+        function syncGradeWithStatus() {
+            const isDropped = statusSelect.value === 'dropped';
+            gradeInput.disabled = isDropped;
+            gradeInput.classList.toggle('opacity-50', isDropped);
+            gradeInput.classList.toggle('cursor-not-allowed', isDropped);
+            if(isDropped) gradeInput.value = '';
+        }
+        statusSelect.addEventListener('change', syncGradeWithStatus);
     }
     
     function deleteMateria(codigo) {
