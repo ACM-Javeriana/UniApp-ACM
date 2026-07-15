@@ -2241,6 +2241,12 @@
         if (materia.estado === 'passed' || materia.estado === 'failed') {
             return { valid: false, reason: 'No puedes mover materias aprobadas o reprobadas' };
         }
+        if(materia.originalCodigo) {
+            const original = materias.find( m=> m.codigo === materia.originalCodigo);
+            if(original && targetSemester <= original.semestre) {
+                return {valid: false, reason:`Es repetición de "${original.nombre}" reprobada en semestre ${original.semestre}`};
+            }
+        }
         
         // Check duplicate: same code already in target semester
         const alreadyInTarget = materias.find(m => m.codigo === materia.codigo && m.semestre === targetSemester);
@@ -2612,12 +2618,29 @@
                 return;
             }
             
-            // Check duplicate on new
+            // Check duplicate on new code and name
             if (!editCode) {
                 const existing = storage.getMateria(codigo);
                 if (existing) {
                     App.showAlert('Ya existe una materia con este código', 'error');
                     return;
+                }
+                const normalize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const sameName = storage.getMaterias().find(m =>normalize(m.nombre) === normalize(nombre));
+                if(sameName) {
+                    App.showAlert(`Ya existe una materia con el nombre "${sameName.nombre}" (${sameName.codigo})`, 'error');
+                    return;
+                }
+            }
+
+            if(editCode) {
+                const editingMateria = storage.getMateria(editCode);
+                if(editingMateria?.originalCodigo) {
+                    const original = storage.getMateria(editingMateria.originalCodigo);
+                    if(original && semestre <=original.semestre) {
+                        App.showAlert(`Es repetición de "${original.nombre}" reprobada en semestre ${original.semestre}`, 'error');
+                        return;
+                    }
                 }
             }
             
