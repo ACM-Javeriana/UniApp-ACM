@@ -2724,6 +2724,45 @@
         App.showAlert('Materia eliminada', 'success');
     }
     
+    function getRootCodigo(materia, materias) {
+        let current = materia;
+        const visited = new Set();
+        while (current.originalCodigo && !visited.has(current.codigo)) {
+            visited.add(current.codigo);
+            const parent = materias.find(m => m.codigo === current.originalCodigo);
+            if (!parent) {
+                break;
+            }
+            current = parent;
+        }
+        return current.codigo;
+    }
+    function cascadeMove(materia, minSemestre,materiasList, visited = new Set()){
+        if(!materia || materia.estado !== 'pending' || visited.has(materia.codigo)) return;
+        visited.add(materia.codigo);
+
+        if(materia.semestre < minSemestre) {
+            const config = storage.getConfiguracion?.() || {max_creditos_semestre: 24};
+            const maxCredits = config.max_creditos_semestre || 24;
+            let target = minSemestre;
+            while (target <=15) {
+                const used = materiasList 
+                    .filter(x=> x.semestre === target && x.codigo !== materia.codigo)
+                    .reduce((s,x) => s + (x.creditos || 0), 0);
+                if (used + (materia.creditos || 0) <= maxCredits) break;
+                target++; 
+            }
+            materia.semestre = target;
+            storage.saveMateria(materia);
+        }
+        const actual = materia.semestre;
+        materiasList 
+            .filter(m => (m.prerrequisitos || []).includes(materia.codigo) && m.estado === 'pending')
+            .forEach(dep => cascadeMove(dep,actual +1, materiasList, visited));
+        materiasList
+            .filter(m =>(m.correquisitos || []).includes(materia.codigo) && m.estado === 'pending' && m.semestre < actual)
+            .forEach(co => cascadeMove(co,actual,materiasList,visited));
+    }
     // Handle failed subject: create a copy in the next semester and update dependencies
     function handleFailedSubject(failedMateria) {
         const materias = storage.getMaterias();
@@ -2773,20 +2812,21 @@
         
         // Update any materias that have the failed subject as prerequisite
         // They now need to wait for the repeated version
-        materias.forEach(m => {
-            if (m.prerrequisitos?.includes(failedMateria.codigo)) {
-                // Push dependent subjects to future semesters if needed
-                if (m.semestre <= targetSemester && m.estado === 'pending') {
-                    m.semestre = targetSemester + 1;
+        const rootCodigo = getRootCodigo(failedMateria, materias);
+        const relevantCodigos = new Set([failedMateria.codigo, rootCodigo]);
+        const freshMaterias = storage.getMaterias();
+        freshMaterias.forEach(m => {
+            const prereqs = m.prerrequisitos || [];
+            if (prereqs.some(p => relevantCodigos.has(p))) {
+                if (!prereqs.includes(newCodigo)) {
+                    m.prerrequisitos = [...prereqs, newCodigo];
                     storage.saveMateria(m);
                 }
+                cascadeMove(m, targetSemester + 1, freshMaterias);
             }
-            // Also check correquisites - they need to move together
-            if (m.correquisitos?.includes(failedMateria.codigo) && m.estado === 'pending') {
-                if (m.semestre < targetSemester) {
-                    m.semestre = targetSemester;
-                    storage.saveMateria(m);
-                }
+            const coreqs = m.correquisitos || [];
+            if (coreqs.some(p => relevantCodigos.has(p)) && m.estado === 'pending' && m.semestre < targetSemester) {
+                cascadeMove(m, targetSemester, freshMaterias);
             }
         });
         
