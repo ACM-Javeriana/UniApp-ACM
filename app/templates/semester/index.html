@@ -51,6 +51,15 @@
                 <span class="text-sm text-gray-500 dark:text-gray-400">Clic en <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> para mover</span>
             </div>
         </div>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 pb-3 mb-1 border-b border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>Pendiente</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>En curso</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aprobada</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Reprobada</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>Retirada</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-500"></span>Bloqueada</span>
+        </div>
+
         
         <div id="semester-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Course cards will be populated here -->
@@ -71,37 +80,6 @@
         </div>
     </div>
     
-    <!-- Status Legend -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-colors">
-        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Leyenda de Estados</h3>
-        <div class="flex flex-wrap gap-x-4 gap-y-2 tablet-stack-actions">
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                <span class="text-sm text-gray-600 dark:text-gray-400">Pendiente</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                <span class="text-sm text-gray-600">En curso</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-green-500"></span>
-                <span class="text-sm text-gray-600">Aprobada</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                <span class="text-sm text-gray-600">Reprobada</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                <span class="text-sm text-gray-600">Retirada</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-gray-500"></span>
-                <span class="text-sm text-gray-600">Bloqueada</span>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Move Confirmation Modal -->
 <div id="move-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
