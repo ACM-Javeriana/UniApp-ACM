@@ -398,9 +398,33 @@
         document.getElementById('move-modal').classList.remove('hidden');
     }
 
+    function cascadeDependents(codigo, movedToSemester, allMaterias, visited = new Set()) {
+        if (visited.has(codigo)) return;
+        visited.add(codigo);
+        const config = storage.getConfiguracion?.() || {max_creditos_semestre: 24};
+        const maxCredits = config.max_creditos_semestre || 24;
+        allMaterias 
+            .filter(m => (m.prerrequisitos || []).includes(codigo) && m.estado === 'pending')
+            .forEach(dep => {
+                if(dep.semestre <= movedToSemester) {
+                    let target = movedToSemester +1;
+                    while(target <= 15) {
+                        const used = allMaterias
+                            .filter(x=> x.semestre === target && x.codigo !== dep.codigo)
+                            .reduce((s,x) => s + (x.creditos || 0), 0);
+                        if(used + (dep.creditos || 0) <= maxCredits) break;
+                        target++
+                    }
+                    dep.semestre = target;
+                    storage.saveMateria(dep);
+                    cascadeDependents(dep.codigo,target,allMaterias,visited);
+                }
+            });
+    }
     function confirmMove(codigo, targetPeriod) {
         const materia = storage.getMateria(codigo);
         if (!materia) return;
+        const prevSemester = materia.semestre;
 
         if (!isINT(targetPeriod)) {
             const targetSemester = parseInt(targetPeriod);
@@ -433,6 +457,9 @@
         }
 
         storage.saveMateria(materia);
+        if(!isINT(targetPeriod) && parseInt(targetPeriod) > prevSemester) {
+            cascadeDependents(codigo, parseInt(targetPeriod), storage.getMaterias());
+        }
         closeMoveModal();
         deselectMateria();
         loadPeriod(currentPeriod);
