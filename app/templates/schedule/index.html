@@ -965,6 +965,36 @@
         }).join('');
     }
     
+    function checkTimeConflict(newBloques, excludeId = null) {
+        const dayNames = { L: 'lunes', M: 'martes', W: 'miércoles', J: 'jueves', V: 'viernes', S: 'sábado' };
+        const overlaps = (a, b) => a.dia === b.dia && a.hora_inicio < b.hora_fin && b.hora_inicio < a.hora_fin;
+
+        for (let i = 0; i < newBloques.length; i++) {
+            for (let j = i + 1; j < newBloques.length; j++) {
+                if (overlaps(newBloques[i], newBloques[j])) {
+                    App.showAlert({ title: 'Bloques en conflicto', detail: 'Dos bloques de esta misma clase se cruzan en el mismo día.' }, 'error');
+                    return false;
+                }
+            }
+        }
+
+        for (const newB of newBloques) {
+            for (const existing of registeredClasses) {
+                if (existing.id === excludeId || existing.disabled) continue;
+                for (const eb of (existing.bloques || [])) {
+                    if (overlaps(newB, eb)) {
+                        App.showAlert({
+                            title: 'Conflicto de horario',
+                            detail: `El ${dayNames[eb.dia] || eb.dia} de ${eb.hora_inicio} a ${eb.hora_fin} ya está ocupado por "${existing.nombre_materia || existing.codigo_materia}".`
+                        }, 'error');
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
     function handleAddClass(e) {
         e.preventDefault();
         
@@ -995,7 +1025,9 @@
             App.showAlert('Agrega al menos un bloque de horario', 'error');
             return;
         }
-        
+
+        if (!checkTimeConflict(timeBlocks)) return;
+
         // Use materia's custom color if available, otherwise use assigned color
         const materiaCustomColor = option.dataset.color;
         const displayColor = materiaCustomColor ? convertCustomColor(materiaCustomColor) : getMateriaColor(codigo);
@@ -1299,7 +1331,9 @@
             App.showAlert('Agrega al menos un bloque de horario', 'error');
             return;
         }
-        
+
+        if (!checkTimeConflict(timeBlocks, editingClassId)) return;
+
         // Update class
         clase.seccion = document.getElementById('edit-class-section').value;
         clase.profesor = document.getElementById('edit-class-professor').value;
