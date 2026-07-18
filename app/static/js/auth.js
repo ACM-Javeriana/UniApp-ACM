@@ -78,12 +78,43 @@ class AuthManager {
         return this.currentUser;
     }
 
+    translateError(msg) {
+        if(!msg) return 'Ocurrio un error inesperado, intenta de nuevo';
+        const m = msg.toLowerCase();
+
+        if(m.includes('invalid login credentials') || m.includes('invalid_credentials'))
+            return 'Correo o contraseña incorrectos. Verifica tus datos e intenta de nuevo';
+        if(m.includes('email not confirmed'))
+            return 'Tu correo aun no ha sido verificado. Revisa tu bandeja de entrada'
+        if (m.includes('password should be at least') || m.includes('password is too short'))
+            return 'La contraseña debe tener al menos 6 caracteres.';
+        if (m.includes('unable to validate email') || m.includes('invalid email') || m.includes('invalid format'))
+            return 'El formato del correo no es válido.';
+        if (m.includes('user already registered') || m.includes('user already exists') || m.includes('already been registered'))
+            return 'Ya existe una cuenta con este correo. Intenta iniciar sesión.';
+        if(m.includes('email rate limit') || m.includes('too many requests') || m.includes('rate limit'))
+            return 'Demasiados intentos seguidos. Espera unos minutos antes de intentar de nuevo';
+        if (m.includes('for security purposes, you can only request this after'))
+            return 'Por seguridad, debes esperar un momento antes de volver a intentarlo.';
+        if (m.includes('signup is disabled'))
+            return 'El registro de nuevos usuarios está desactivado temporalmente.';
+        if (m.includes('supabase not initialized') || m.includes('not initialized'))
+            return 'La sincronización en la nube no está disponible en este momento.';
+        if (m.includes('network') || m.includes('fetch') || m.includes('failed to fetch'))
+            return 'No se pudo conectar con el servidor. Verifica tu conexión a internet.';
+        if (m.includes('jwt') || m.includes('token') || m.includes('session'))
+            return 'Tu sesión ha expirado. Por favor inicia sesión de nuevo.';
+        if (m.includes('provider') || m.includes('oauth'))
+            return 'No se pudo completar el inicio de sesión con el proveedor externo. Intenta de nuevo.';
+
+        return msg.charAt(0).toUpperCase() + msg.slice(1);
+    }
     /**
      * Sign up with email and password
      */
     async signUp(email, password) {
         if (!this.supabase) {
-            return { success: false, error: 'Supabase not initialized' };
+            return { success: false, error: this.translateError('supabase not initialized') };
         }
 
         try {
@@ -100,7 +131,7 @@ class AuthManager {
                 message: 'Cuenta creada. Por favor verifica tu email.'
             };
         } catch (error) {
-            return { success: false, error: error.message };
+            return { success: false, error: this.translateError(error.message)};
         }
     }
 
@@ -109,7 +140,7 @@ class AuthManager {
      */
     async signIn(email, password) {
         if (!this.supabase) {
-            return { success: false, error: 'Supabase not initialized' };
+            return { success: false, error: this.translateError('supabase not initialized') };
         }
 
         try {
@@ -122,7 +153,7 @@ class AuthManager {
 
             return { success: true, user: data.user };
         } catch (error) {
-            return { success: false, error: error.message };
+            return { success: false, error: this.translateError(error.message) };
         }
     }
 
@@ -131,7 +162,7 @@ class AuthManager {
      */
     async signInWithProvider(provider) {
         if (!this.supabase) {
-            return { success: false, error: 'Supabase not initialized' };
+            return { success: false, error: this.translateError('supabase not initialized') };
         }
 
         try {
@@ -146,7 +177,7 @@ class AuthManager {
 
             return { success: true };
         } catch (error) {
-            return { success: false, error: error.message };
+            return { success: false, error: this.translateError(error.message) };
         }
     }
 
@@ -155,7 +186,7 @@ class AuthManager {
      */
     async signOut() {
         if (!this.supabase) {
-            return { success: false, error: 'Supabase not initialized' };
+            return { success: false, error: this.translateError('supabase not initialized') };
         }
 
         try {
@@ -169,7 +200,7 @@ class AuthManager {
 
             return { success: true };
         } catch (error) {
-            return { success: false, error: error.message };
+            return { success: false, error: this.translateError(error.message) };
         }
     }
 
@@ -178,7 +209,7 @@ class AuthManager {
      */
     async resetPassword(email) {
         if (!this.supabase) {
-            return { success: false, error: 'Supabase not initialized' };
+            return { success: false, error: this.translateError('supabase not initialized') };
         }
 
         try {
@@ -193,7 +224,7 @@ class AuthManager {
                 message: 'Revisa tu email para restablecer tu contraseña'
             };
         } catch (error) {
-            return { success: false, error: error.message };
+            return { success: false, error: this.translateError(error.message) };
         }
     }
 
