@@ -130,6 +130,16 @@
                         </svg>
                     </button>
 
+                    <!-- Bug report button -->
+                    <button onclick="openBugReport()"
+                            class="flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] transition-colors"
+                            title="Reportar problema"
+                            aria-label="Reportar problema">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </button>
+
                     <!-- Auth button + dropdown -->
                     <div id="auth-section" class="relative">
                         <button id="auth-button"
@@ -273,6 +283,46 @@
         </div>
     </footer>
 
+    <!-- Bug Report Modal -->
+    <div id="bug-report-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-700">
+                <h2 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Reportar problema</h2>
+                <button onclick="closeBugReport()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="px-5 py-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">¿Qué pasó? <span class="text-red-400">*</span></label>
+                    <textarea id="bug-description" rows="3" placeholder="Describe el problema con el mayor detalle posible..."
+                              class="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-accent-500 focus:border-accent-500 resize-none p-2"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">¿Cómo reproducirlo? (opcional)</label>
+                    <textarea id="bug-steps" rows="2" placeholder="Ej: 1. Fui a Pensum  2. Agregué una materia  3. ..."
+                              class="w-full text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-accent-500 focus:border-accent-500 resize-none p-2"></textarea>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
+                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Info de diagnóstico (se incluye automáticamente)</p>
+                    <div id="bug-diagnostics" class="text-xs text-gray-400 dark:text-gray-500 space-y-0.5 font-mono"></div>
+                </div>
+            </div>
+            <div class="flex gap-2 px-5 py-4 border-t border-gray-100 dark:border-gray-700">
+                <button onclick="closeBugReport()"
+                        class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-lg transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="copyBugReport()"
+                        class="flex-1 py-2 text-sm font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors">
+                    Enviar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ── Core JavaScript ────────────────────────────────────── -->
     <script src="{{ url_for('static', filename='js/theme.js',    v=asset_version('js/theme.js'))    }}"></script>
     <script src="{{ url_for('static', filename='js/storage.js',  v=asset_version('js/storage.js'))  }}"></script>
@@ -329,6 +379,85 @@
             new MutationObserver(function() { mobile.textContent = desktop.textContent; })
                 .observe(desktop, { childList: true, characterData: true, subtree: true });
         });
+        function collectDiagnostics() {
+            const ua = navigator.userAgent;
+            let browser = 'Desconocido';
+            if (ua.includes('Edg'))         browser = 'Edge';
+            else if (ua.includes('Chrome')) browser = 'Chrome';
+            else if (ua.includes('Firefox')) browser = 'Firefox';
+            else if (ua.includes('Safari')) browser = 'Safari';
+            const os = /Windows/.test(ua) ? 'Windows'
+                     : /Mac/.test(ua)      ? 'macOS'
+                     : /Linux/.test(ua)    ? 'Linux'
+                     : /Android/.test(ua)  ? 'Android'
+                     : /iPhone|iPad/.test(ua) ? 'iOS' : '?';
+
+            const version = document.querySelector('[title="Versión del commit"]')?.textContent?.trim() || '?';
+            const page    = window.location.pathname;
+            const theme   = localStorage.getItem('uniapp_theme') || 'sistema';
+            const isAuth  = (typeof auth !== 'undefined' && auth.isAuthenticated()) ? 'Sí' : 'No';
+
+            let materias = 0, clases = 0, semestre = '?';
+            try {
+                materias = (storage.getMaterias?.() || []).length;
+                clases   = (storage.getClases?.()   || []).length;
+                semestre = storage.getConfiguracion?.()?.semestre_actual ?? '?';
+            } catch (_) {}
+
+            return { page, browser: `${browser} / ${os}`, version, theme, isAuth, materias, clases, semestre };
+        }
+        function openBugReport() {
+            const d = collectDiagnostics();
+            const lines = [`Página:${d.page}`,`Navegador: ${d.browser}`,`Versión:${d.version}`,`Tema: ${d.theme}`,`Sesión: ${d.isAuth}`,`Materias: ${d.materias}`,`Clases: ${d.clases}`,`Semestre:  ${d.semestre}`,];
+            document.getElementById('bug-diagnostics').innerHTML =
+                lines.map(l => `<div>${l}</div>`).join('');
+            document.getElementById('bug-description').value ='';
+            document.getElementById('bug-steps').value ='';
+            document.getElementById('bug-report-modal').classList.remove('hidden');
+        }
+        function closeBugReport() {
+            document.getElementById('bug-report-modal').classList.add('hidden');
+        }
+        function buildReportText () {
+            const desc = document.getElementById('bug-description').value.trim();
+            const steps = document.getElementById('bug-steps').value.trim();
+            const d = collectDiagnostics();
+            if (!desc) {App.showAlert('Describe el problema antes de generar reporte', 'warning'); return null;}
+
+            return [
+                '## Descripción del problema',
+            desc,
+            '',
+            steps ? '## Pasos para reproducir' : '',
+            steps || '',
+            '',
+            '## Informacion del sistema',
+            `- **Página**: \`${d.page}\``,
+            `- **Navegador**: ${d.browser}`,
+            `- **Versión**: \`${d.version}\``,
+            `- **Tema**: ${d.theme}`,
+            `- **Sesión activa**: ${d.isAuth}`,
+            '',
+            '## Diagnóstico',
+            `- Materias registradas: ${d.materias}`,
+            `- Clases de horario: ${d.clases}`,
+            `- Semestre configurado: ${d.semestre}`,
+        ].filter(l => l !== null).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+     }
+     function copyBugReport() {
+        const text = buildReportText();
+        if (!text) return;
+        navigator.clipboard.writeText(text).then(() => {
+            closeBugReport();
+            App.showAlert({ title: 'Reporte copiado', detail: 'Pégalo en un issue de GitHub o donde necesites.' }, 'success');
+        }).catch(() => {
+            App.showAlert({ title: 'No se pudo copiar', detail: 'Intenta de nuevo o copia el texto manualmente.' }, 'error');
+        });
+     }
+     document.getElementById('bug-report-modal').addEventListener('click', function(e) {
+        if(e.target === this) closeBugReport();
+     });
     </script>
 
     {% block scripts %}{% endblock %}
