@@ -307,15 +307,18 @@ const App = {
     /**
      * Show an alert message
      */
-    showAlert(message, type = 'info') {
+    showAlert(message, type = 'info', options = {}) {
         // Remove existing alerts
         document.querySelectorAll('.app-alert').forEach(el => el.remove());
+        const title= (message && typeof message === 'object') ? message.title : message;
+        const detail = (message && typeof message === 'object' ? message.detail: (options.detail || null));
+        const action = options.action || null;
         
         const colors = {
-            success: 'bg-green-100 border-green-400 text-green-800',
-            error: 'bg-red-100 border-red-400 text-red-800',
-            warning: 'bg-yellow-100 border-yellow-400 text-yellow-800',
-            info: 'bg-blue-100 border-blue-400 text-blue-800'
+            success: 'bg-green-50 border-green-300 text-green-900 dark:bg-green-950 dark:border-green-700 dark:text-green-100',
+            error: 'bg-red-50 border-red-300 text-red-900 dark:bg-red-950 dark:border-red-700 dark:text-red-100',
+            warning: 'bg-yellow-50 border-yellow-300 text-yellow-900 dark:bg-yellow-950 dark:border-yellow-700 dark:text-yellow-100',
+            info: 'bg-blue-50 border-blue-300 text-blue-900 dark:bg-blue-950 dark:border-blue-700 dark:text-blue-100'
         };
         
         const icons = {
@@ -325,35 +328,67 @@ const App = {
             info: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>'
         };
         
-        const alert = document.createElement('div');
-        alert.className = `app-alert fixed top-4 right-4 z-50 max-w-md p-4 rounded-lg border ${colors[type]} shadow-lg transform transition-all duration-300 translate-x-full`;
-        alert.innerHTML = `
-            <div class="flex items-start gap-3">
-                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    ${icons[type]}
-                </svg>
-                <div class="flex-1 whitespace-pre-wrap">${message}</div>
-                <button onclick="this.parentElement.parentElement.remove()" class="flex-shrink-0 p-1 hover:bg-white/50 rounded">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-        `;
-        
-        document.body.appendChild(alert);
-        
-        // Animate in
-        requestAnimationFrame(() => {
-            alert.classList.remove('translate-x-full');
-        });
-        
-        // Auto remove after 5 seconds (longer for warnings)
-        const duration = type === 'warning' ? 8000 : 5000;
-        setTimeout(() => {
-            alert.classList.add('translate-x-full');
-            setTimeout(() => alert.remove(), 300);
-        }, duration);
+        const durations = { error: 9000, warning: 7000, success: 4000, info: 5000 };
+
+        const alertEl = document.createElement('div');
+        alertEl.className = `app-alert fixed top-4 right-4 z-50 max-w-sm w-full p-4 rounded-xl border shadow-lg transition-all duration-300 translate-x-full ${colors[type] || colors.info}`;
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'w-5 h-5 flex-shrink-0 mt-0.5');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('stroke-linecap', 'round');
+        pathEl.setAttribute('stroke-linejoin', 'round');
+        pathEl.setAttribute('stroke-width', '2');
+        pathEl.setAttribute('d', (icons[type] || icons.info).match(/d="([^"]+)"/)[1]);
+        svg.appendChild(pathEl);
+
+        const textDiv = document.createElement('div');
+        textDiv.className = 'flex-1 min-w-0';
+
+        const titleEl = document.createElement('p');
+        titleEl.className = 'text-sm font-semibold leading-snug';
+        titleEl.textContent = title;
+        textDiv.appendChild(titleEl);
+
+        if (detail) {
+            const detailEl = document.createElement('p');
+            detailEl.className = 'text-xs mt-1 opacity-80 leading-snug';
+            detailEl.textContent = detail;
+            textDiv.appendChild(detailEl);
+        }
+
+        if (action) {
+            const actionBtn = document.createElement('button');
+            actionBtn.className = 'text-xs mt-2 font-semibold underline underline-offset-2 hover:no-underline block';
+            actionBtn.textContent = action.label;
+            actionBtn.addEventListener('click', () => { action.fn(); dismiss(); });
+            textDiv.appendChild(actionBtn);
+        }
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'flex-shrink-0 ml-3 p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors';
+        closeBtn.setAttribute('aria-label', 'Cerrar');
+        closeBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>`;
+
+        const row = document.createElement('div');
+        row.className = 'flex items-start gap-3';
+        row.appendChild(svg);
+        row.appendChild(textDiv);
+        row.appendChild(closeBtn);
+        alertEl.appendChild(row);
+
+        const dismiss = () => {
+            alertEl.classList.add('translate-x-full', 'opacity-0');
+            setTimeout(() => alertEl.remove(), 300);
+        };
+        closeBtn.addEventListener('click', dismiss);
+
+        document.body.appendChild(alertEl);
+        requestAnimationFrame(() => alertEl.classList.remove('translate-x-full'));
+        setTimeout(dismiss, durations[type] ?? 5000);
     },
 
     /**
@@ -371,7 +406,7 @@ const App = {
         if (result.success) {
             this.showAlert('Datos sincronizados correctamente', 'success');
         } else {
-            this.showAlert('Error al sincronizar: ' + (result.error || 'Error desconocido'), 'error');
+            this.showAlert({ title: 'No se pudo sincronizar', detail: result.error || 'Verifica tu conexión e intenta de nuevo.' }, 'error');
         }
     },
 
