@@ -2,7 +2,7 @@
 
 Sistema de gestión académica universitaria para visualización de pensum, seguimiento de GPA y generación de horarios.
 
-🌐 **[Acceder a la aplicación](https://uni-app-eta.vercel.app)**
+🌐 **[Acceder a la aplicación](https://uni-app-acm.vercel.app)**
 
 ---
 
