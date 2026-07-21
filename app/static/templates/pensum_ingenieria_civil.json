@@ -1,0 +1,644 @@
+{
+  "materias": [
+    {
+      "codigo": "001295",
+      "nombre": "Cálculo Diferencial",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001290",
+      "nombre": "Álgebra Lineal",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001138",
+      "nombre": "Química de Materiales",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "034588",
+      "nombre": "Geometría Descriptiva",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034595",
+      "nombre": "Construcción Sostenible",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033763",
+      "nombre": "Introducción a la Ingeniería",
+      "creditos": 2,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "001297",
+      "nombre": "Cálculo Integral",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "001295"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001340",
+      "nombre": "Física Mecánica",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "001295"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "033698",
+      "nombre": "Introducción a la Programación",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "034584",
+      "nombre": "Geomática",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "034588"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034583",
+      "nombre": "Geología",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "001138"
+      ],
+      "correquisitos": [
+        "034584"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033733",
+      "nombre": "Proyecto de Diseño en Ingeniería I",
+      "creditos": 2,
+      "semestre": 2,
+      "prerrequisitos": [
+        "033763"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "001300",
+      "nombre": "Ecuaciones Diferenciales",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001297",
+        "001290"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001299",
+      "nombre": "Cálculo Vectorial",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001297",
+        "001290"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "034589",
+      "nombre": "Análisis de Amenaza y Confiabilidad en Ingeniería Civil",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034596",
+      "nombre": "Mecánica Estructural I",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001290",
+        "001340",
+        "001297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "002544",
+      "nombre": "Significación Teológica",
+      "creditos": 2,
+      "semestre": 3,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "033733"
+      ],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "034969",
+      "nombre": "Matemática Financiera en Proyectos de Obra Civil",
+      "creditos": 2,
+      "semestre": 3,
+      "prerrequisitos": [
+        "034595"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "038058",
+      "nombre": "Ingeniería de Proyectos I",
+      "creditos": 2,
+      "semestre": 3,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "034969"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034591",
+      "nombre": "Mecánica de Fluidos",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "034966"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "003182",
+      "nombre": "Métodos Numéricos Aplicados a Ingeniería",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "033698",
+        "001300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034966",
+      "nombre": "Mecánica Estructural II",
+      "creditos": 5,
+      "semestre": 4,
+      "prerrequisitos": [
+        "001299",
+        "034596",
+        "001300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034585",
+      "nombre": "Ingeniería de Transporte y Tránsito",
+      "creditos": 4,
+      "semestre": 4,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "034589"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "038057",
+      "nombre": "Proyecto de Diseño en Ingeniería Civil",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "033733",
+        "038058"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034582",
+      "nombre": "Mecánica de Suelos",
+      "creditos": 4,
+      "semestre": 5,
+      "prerrequisitos": [
+        "034589",
+        "034583"
+      ],
+      "correquisitos": [
+        "034966"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "003186",
+      "nombre": "Hidrología",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "034589"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034592",
+      "nombre": "Hidráulica",
+      "creditos": 5,
+      "semestre": 5,
+      "prerrequisitos": [
+        "034591",
+        "003182"
+      ],
+      "correquisitos": [
+        "003186"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034967",
+      "nombre": "Mecánica Estructural III",
+      "creditos": 4,
+      "semestre": 5,
+      "prerrequisitos": [
+        "003182",
+        "034966"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "002356",
+      "nombre": "Epistemología de la Ingeniería",
+      "creditos": 2,
+      "semestre": 5,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "038057"
+      ],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "034593",
+      "nombre": "Diseño de Acueductos y Alcantarillados",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [
+        "034592"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "ENF01",
+      "nombre": "Énfasis I",
+      "creditos": 4,
+      "semestre": 6,
+      "prerrequisitos": [
+        "038057"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "038056",
+      "nombre": "Diseño Geométrico de Vías",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [
+        "034585"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "ELEC01",
+      "nombre": "Electiva I",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "PROENF",
+      "nombre": "Proyecto de Diseño de Énfasis",
+      "creditos": 6,
+      "semestre": 6,
+      "prerrequisitos": [
+        "038057"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "035391",
+      "nombre": "Materiales de Construcción",
+      "creditos": 4,
+      "semestre": 7,
+      "prerrequisitos": [
+        "034596",
+        "034583"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "027593",
+      "nombre": "Fundamentos en Pavimentos",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "034585",
+        "034582"
+      ],
+      "correquisitos": [
+        "035391"
+      ],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "ENF02",
+      "nombre": "Énfasis II",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "ENF01"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "002476",
+      "nombre": "Fe y Compromiso del Ingeniero",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "PROENF"
+      ],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "035822",
+      "nombre": "Constitución y Derecho Público",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "038057"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "ELEC02",
+      "nombre": "Electiva II",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "COMP01",
+      "nombre": "Complementaria I",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "034968",
+      "nombre": "Diseño y Construcción de Edificaciones de Concreto Reforzado",
+      "creditos": 6,
+      "semestre": 8,
+      "prerrequisitos": [
+        "034967",
+        "035391"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "004045",
+      "nombre": "Proyecto Social Universitario",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [
+        "038057"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "COMP02",
+      "nombre": "Complementaria II",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "002376",
+      "nombre": "Ética en la Ingeniería",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [
+        "004045"
+      ],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "ENF03",
+      "nombre": "Electiva de Énfasis",
+      "creditos": 4,
+      "semestre": 8,
+      "prerrequisitos": [
+        "ENF01"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "ELEC03",
+      "nombre": "Electiva III",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    }
+  ],
+  "calificaciones": [],
+  "_comentarios": {
+    "estados_validos": [
+      "pending",
+      "enrolled",
+      "passed",
+      "failed",
+      "dropped"
+    ],
+    "tipos_validos": [
+      "nucleo",
+      "basicas",
+      "sociohumano",
+      "enfasis",
+      "complementarias",
+      "electivas"
+    ],
+    "tipos_descripcion": {
+      "nucleo": "Núcleo Carrera - Ciencias básicas en ingeniería + Ingeniería aplicada (según el cuadro de pre/correquisitos)",
+      "basicas": "Ciencias Básicas - Matemáticas, física, química, etc.",
+      "sociohumano": "Institucionales - Significación Teológica, Epistemología, Ética, Fe y Compromiso, Constitución y Derecho Público",
+      "enfasis": "Énfasis - Especialización dentro de la carrera",
+      "complementarias": "Complementarias - Materias de apoyo",
+      "electivas": "Electivas - Materias de libre elección"
+    },
+    "color": "Color hexadecimal para la materia (ej: #5091AF)",
+    "nota_rango": "0.0 a 5.0",
+    "porcentaje_total": "Los porcentajes de componentes deberían sumar 100%, pero el cálculo funciona con cualquier porcentaje",
+    "prerrequisitos": "Array de códigos de materias que deben estar aprobadas ANTES de cursar esta materia",
+    "correquisitos": "Array de códigos de materias que deben cursarse EN EL MISMO SEMESTRE (coterminales)"
+  }
+}

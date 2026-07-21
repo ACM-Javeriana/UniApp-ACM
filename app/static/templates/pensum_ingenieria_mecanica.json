@@ -1,0 +1,656 @@
+{
+  "materias": [
+    {
+      "codigo": "001295",
+      "nombre": "Cálculo diferencial",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001290",
+      "nombre": "Álgebra lineal",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "033698",
+      "nombre": "Introducción a la programación",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "033735",
+      "nombre": "Innovación y diseño de producto",
+      "creditos": 2,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "001138",
+      "nombre": "Química materiales",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "033763",
+      "nombre": "Introducción a la Ingeniería",
+      "creditos": 2,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "001297",
+      "nombre": "Cálculo Integral",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "001295"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001340",
+      "nombre": "Física mecánica",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "033699",
+      "nombre": "Programación avanzada",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "033698"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033734",
+      "nombre": "Fundamentos de los materiales",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "033735"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033733",
+      "nombre": "Proyecto de diseño en Ingeniería (CDIO año 1)",
+      "creditos": 2,
+      "semestre": 2,
+      "prerrequisitos": [
+        "033763"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "ELEC01",
+      "nombre": "Electiva I",
+      "creditos": 2,
+      "semestre": 2,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "001299",
+      "nombre": "Cálculo vectorial",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001290",
+        "001297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001300",
+      "nombre": "Ecuaciones diferenciales",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001290",
+        "001297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "033732",
+      "nombre": "Probabilidad y estadística",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "023710",
+      "nombre": "Electricidad, magnetismo y materiales",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001340",
+        "001297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "001341",
+      "nombre": "Fluidos y termodinámica",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001297",
+        "001340"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "002544",
+      "nombre": "Significación teológica",
+      "creditos": 2,
+      "semestre": 3,
+      "prerrequisitos": [
+        "033733"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "033759",
+      "nombre": "Estática y dinámica",
+      "creditos": 4,
+      "semestre": 4,
+      "prerrequisitos": [
+        "001299",
+        "001340"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "036298",
+      "nombre": "Mecánica de fluidos integral",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "001341",
+        "001299",
+        "001300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "030894",
+      "nombre": "Fundamentos de circuitos eléctricos",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "023710"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033761",
+      "nombre": "Metrología e instrumentación",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "033732"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033760",
+      "nombre": "Procesos de manufactura moderna",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "033734"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033768",
+      "nombre": "Mecánica de materiales",
+      "creditos": 4,
+      "semestre": 4,
+      "prerrequisitos": [
+        "033734",
+        "001297",
+        "001340",
+        "001300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033767",
+      "nombre": "Termodinámica",
+      "creditos": 4,
+      "semestre": 5,
+      "prerrequisitos": [
+        "036298"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "035962",
+      "nombre": "Análisis numérico Mecánica",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "033698",
+        "001300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "004153",
+      "nombre": "Señales y sistemas",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "001297",
+        "001290"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "033772",
+      "nombre": "Diseño de máquinas",
+      "creditos": 4,
+      "semestre": 5,
+      "prerrequisitos": [
+        "033759",
+        "033760"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "035758",
+      "nombre": "Proyecto de diseño en Mecánica",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "033733",
+        "033768",
+        "033760"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "ELEC02",
+      "nombre": "Electiva II",
+      "creditos": 2,
+      "semestre": 5,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "COMP01",
+      "nombre": "Complementaria I",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "ENF01",
+      "nombre": "Énfasis I",
+      "creditos": 3,
+      "semestre": 6,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "033766",
+      "nombre": "Tranferencia de calor",
+      "creditos": 3,
+      "semestre": 6,
+      "prerrequisitos": [
+        "001341",
+        "001300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "031584",
+      "nombre": "Análisis de sistemas dinámicos",
+      "creditos": 3,
+      "semestre": 6,
+      "prerrequisitos": [
+        "001300",
+        "001341"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "032842",
+      "nombre": "Ética, tecnología e Ingeniería",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [
+        "035758"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "ELEC03",
+      "nombre": "Electiva III",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "COMP02",
+      "nombre": "Complementaria II",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "ENF02",
+      "nombre": "Énfasis II",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "032712",
+      "nombre": "Energía renovable",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [
+        "030894"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "034597",
+      "nombre": "Fundamentos de nanotecnología",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [
+        "035758"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "002476",
+      "nombre": "Fe y compromiso del ingeniero",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "035758"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "004175",
+      "nombre": "Proyecto social universitario",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "035758"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "037236",
+      "nombre": "Seminario de trabajo de grado",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "035758",
+        "031584"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "COMP03",
+      "nombre": "Complementaria III",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "ENF03",
+      "nombre": "Énfasis III",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "002356",
+      "nombre": "Epistemología de la Ingeniería",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [
+        "035758"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "034541",
+      "nombre": "Constitución y Derecho Laboral",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [
+        "035758"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "004179",
+      "nombre": "Trabajo de grado",
+      "creditos": 4,
+      "semestre": 8,
+      "prerrequisitos": [
+        "037236"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "ELEC04",
+      "nombre": "Electiva IV",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    }
+  ],
+  "calificaciones": [],
+  "_comentarios": {
+    "estados_validos": [
+      "pending",
+      "enrolled",
+      "passed",
+      "failed",
+      "dropped"
+    ],
+    "tipos_validos": [
+      "nucleo",
+      "basicas",
+      "sociohumano",
+      "enfasis",
+      "complementarias",
+      "electivas"
+    ],
+    "tipos_descripcion": {
+      "nucleo": "Núcleo Carrera - Ciencias básicas en ingeniería + Ingeniería aplicada (mecánica, materiales, sistemas, etc.)",
+      "basicas": "Ciencias Básicas - Matemáticas, física, química, programación",
+      "sociohumano": "Institucionales - Significación Teológica, Ética, Fe y Compromiso, Epistemología, Constitución y Derecho Laboral",
+      "enfasis": "Énfasis - Especialización dentro de la carrera",
+      "complementarias": "Complementarias - Materias de apoyo",
+      "electivas": "Electivas - Materias de libre elección"
+    },
+    "color": "Color hexadecimal para la materia (ej: #5091AF)",
+    "nota_rango": "0.0 a 5.0",
+    "porcentaje_total": "Los porcentajes de componentes deberían sumar 100%, pero el cálculo funciona con cualquier porcentaje",
+    "prerrequisitos": "Array de códigos de materias que deben estar aprobadas ANTES de cursar esta materia",
+    "correquisitos": "Array de códigos de materias que deben cursarse EN EL MISMO SEMESTRE (coterminales)"
+  }
+}

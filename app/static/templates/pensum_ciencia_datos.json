@@ -71,7 +71,10 @@
       "nombre": "Microeconomía",
       "creditos": 2,
       "semestre": 2,
-      "prerrequisitos": ["001449", "032683"],
+      "prerrequisitos": [
+        "001449",
+        "032683"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#D97706",
@@ -82,7 +85,9 @@
       "nombre": "Cálculo Vectorial",
       "creditos": 3,
       "semestre": 2,
-      "prerrequisitos": ["032683"],
+      "prerrequisitos": [
+        "032683"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -104,7 +109,9 @@
       "nombre": "Programación Avanzada",
       "creditos": 3,
       "semestre": 2,
-      "prerrequisitos": ["033698"],
+      "prerrequisitos": [
+        "033698"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -115,7 +122,9 @@
       "nombre": "Curaduría y Gobernanza de Datos",
       "creditos": 2,
       "semestre": 2,
-      "prerrequisitos": ["033514"],
+      "prerrequisitos": [
+        "033514"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -137,7 +146,9 @@
       "nombre": "Macroeconomía",
       "creditos": 2,
       "semestre": 3,
-      "prerrequisitos": ["015962"],
+      "prerrequisitos": [
+        "015962"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#D97706",
@@ -148,7 +159,9 @@
       "nombre": "Teoría de Probabilidad",
       "creditos": 3,
       "semestre": 3,
-      "prerrequisitos": ["001299"],
+      "prerrequisitos": [
+        "001299"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -159,7 +172,10 @@
       "nombre": "Estructuras de Datos",
       "creditos": 3,
       "semestre": 3,
-      "prerrequisitos": ["033518", "033699"],
+      "prerrequisitos": [
+        "033518",
+        "033699"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -170,7 +186,10 @@
       "nombre": "Bases de Datos",
       "creditos": 4,
       "semestre": 3,
-      "prerrequisitos": ["033518", "033699"],
+      "prerrequisitos": [
+        "033518",
+        "033699"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -181,7 +200,10 @@
       "nombre": "Visualización de Datos",
       "creditos": 2,
       "semestre": 3,
-      "prerrequisitos": ["033514", "033698"],
+      "prerrequisitos": [
+        "033514",
+        "033698"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -192,7 +214,9 @@
       "nombre": "Inferencia Estadística",
       "creditos": 4,
       "semestre": 4,
-      "prerrequisitos": ["030890"],
+      "prerrequisitos": [
+        "030890"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -214,7 +238,9 @@
       "nombre": "Principios de Desarrollo de Software",
       "creditos": 2,
       "semestre": 4,
-      "prerrequisitos": ["033700"],
+      "prerrequisitos": [
+        "033700"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -225,7 +251,9 @@
       "nombre": "Introducción a Inteligencia Artificial",
       "creditos": 3,
       "semestre": 4,
-      "prerrequisitos": ["004196"],
+      "prerrequisitos": [
+        "004196"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -269,7 +297,9 @@
       "nombre": "Análisis de Regresión",
       "creditos": 3,
       "semestre": 5,
-      "prerrequisitos": ["033519"],
+      "prerrequisitos": [
+        "033519"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -280,7 +310,9 @@
       "nombre": "Gestión de Proyectos",
       "creditos": 2,
       "semestre": 5,
-      "prerrequisitos": ["001432"],
+      "prerrequisitos": [
+        "001432"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#D97706",
@@ -291,7 +323,9 @@
       "nombre": "Procesamiento de Datos a Gran Escala",
       "creditos": 2,
       "semestre": 5,
-      "prerrequisitos": ["033700"],
+      "prerrequisitos": [
+        "033700"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -302,7 +336,10 @@
       "nombre": "Fund. de Aprendizaje de Máquina",
       "creditos": 2,
       "semestre": 5,
-      "prerrequisitos": ["004084", "033519"],
+      "prerrequisitos": [
+        "004084",
+        "033519"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -324,7 +361,9 @@
       "nombre": "Organizaciones",
       "creditos": 2,
       "semestre": 6,
-      "prerrequisitos": ["001377"],
+      "prerrequisitos": [
+        "001377"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#D97706",
@@ -346,7 +385,9 @@
       "nombre": "Análisis Multivariado",
       "creditos": 3,
       "semestre": 6,
-      "prerrequisitos": ["033519"],
+      "prerrequisitos": [
+        "033519"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -357,7 +398,10 @@
       "nombre": "Técnicas de Aprendizaje de Máquina",
       "creditos": 3,
       "semestre": 6,
-      "prerrequisitos": ["004084", "033519"],
+      "prerrequisitos": [
+        "004084",
+        "033519"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -368,7 +412,9 @@
       "nombre": "Intro. a la Narrativa de Datos",
       "creditos": 2,
       "semestre": 6,
-      "prerrequisitos": ["033704"],
+      "prerrequisitos": [
+        "033704"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -390,7 +436,10 @@
       "nombre": "Seminario de Trabajo de Grado",
       "creditos": 3,
       "semestre": 7,
-      "prerrequisitos": ["033521", "033703"],
+      "prerrequisitos": [
+        "033521",
+        "033703"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -401,7 +450,10 @@
       "nombre": "Temas de Optimización",
       "creditos": 4,
       "semestre": 7,
-      "prerrequisitos": ["001290", "033699"],
+      "prerrequisitos": [
+        "001290",
+        "033699"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -456,7 +508,10 @@
       "nombre": "Trabajo de Grado",
       "creditos": 3,
       "semestre": 8,
-      "prerrequisitos": ["033523", "034912"],
+      "prerrequisitos": [
+        "033523",
+        "034912"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0D9488",
@@ -467,7 +522,11 @@
       "nombre": "Optimización Lineal",
       "creditos": 4,
       "semestre": 8,
-      "prerrequisitos": ["001290", "032683", "033698"],
+      "prerrequisitos": [
+        "001290",
+        "032683",
+        "033698"
+      ],
       "correquisitos": [],
       "estado": "pending",
       "color": "#0284C7",
@@ -517,5 +576,133 @@
       "color": "#D97706",
       "tipo": "sociohumano"
     }
-  ]
+  ],
+  "calificaciones": [],
+  "_comentarios": {
+    "carrera": "Ciencia de Datos",
+    "estados_validos": [
+      "pending",
+      "enrolled",
+      "passed",
+      "failed",
+      "dropped"
+    ],
+    "tipos_validos": [
+      "nucleo",
+      "basicas",
+      "sociohumano",
+      "enfasis",
+      "complementarias",
+      "electivas"
+    ],
+    "lineas_formativas": {
+      "CEA": {
+        "descripcion": "Línea Formativa en C. Económicas y Administrativas (15 créditos)",
+        "color": "#16a34a",
+        "tipo": "sociohumano",
+        "cursos": [
+          "001449",
+          "015962",
+          "001432",
+          "001377",
+          "033762",
+          "001382",
+          "034912"
+        ]
+      },
+      "matematicas_estadistica": {
+        "descripcion": "L.F. Matemáticas y Estadística (27 créditos)",
+        "color": "#ea580c",
+        "tipo": "basicas",
+        "cursos": [
+          "032683",
+          "001299",
+          "001290",
+          "030890",
+          "033519",
+          "033520",
+          "033521",
+          "033305_o_033746"
+        ]
+      },
+      "computacion_aprendizaje": {
+        "descripcion": "L. Computación y Aprendizaje (28 créditos)",
+        "color": "#7c3aed",
+        "tipo": "nucleo",
+        "cursos": [
+          "033518",
+          "033698",
+          "033699",
+          "004196",
+          "033700",
+          "033701",
+          "004084",
+          "033702",
+          "033703",
+          "033773"
+        ]
+      },
+      "comunicacion": {
+        "descripcion": "Línea Formativa en Comunicación (10 créditos)",
+        "color": "#0284c7",
+        "tipo": "sociohumano",
+        "cursos": [
+          "001505",
+          "TEO_1",
+          "TEO_2",
+          "FIL_1",
+          "FIL_2"
+        ]
+      },
+      "ciencia_de_datos": {
+        "descripcion": "L. Formativa en Ciencia de Datos (14 créditos)",
+        "color": "#db2777",
+        "tipo": "nucleo",
+        "cursos": [
+          "033514",
+          "033515",
+          "033704",
+          "033573",
+          "033523",
+          "033522"
+        ]
+      }
+    },
+    "total_creditos": 134,
+    "total_creditos_por_linea": {
+      "CEA": 15,
+      "matematicas_estadistica": 27,
+      "computacion_aprendizaje": 28,
+      "comunicacion": 10,
+      "ciencia_de_datos": 14,
+      "flexibles_electivas_comp_enfasis": 40
+    },
+    "nota_rango": "0.0 a 5.0",
+    "prerrequisitos": "Array de códigos de materias que deben estar aprobadas ANTES de cursar esta materia",
+    "correquisitos": "Array de códigos de materias que deben cursarse EN EL MISMO SEMESTRE",
+    "requisitos_especiales": {
+      "general": "Requisito de grado: certificación de inglés B2"
+    },
+    "alternativas_optimizacion": {
+      "descripcion": "033305 (Temas de Optimización, S7) y 033746 (Optimización Lineal, S8) son cursos ALTERNATIVOS. El estudiante toma UNO de los dos según su línea de profundización. El total de 134 créditos asume que solo se cursa uno de ellos.",
+      "033305": "Enfoque algorítmico/computacional. PRE: Álgebra Lineal + Programación Avanzada",
+      "033746": "Enfoque matemático/lineal. PRE: Álgebra Lineal + Matemáticas I + Intro Programación"
+    },
+    "codigos_placeholder": {
+      "ELEC_1": "Electiva 1 - semestre 1 (4 créditos)",
+      "ELEC_2": "Electiva 2 - semestre 2 (4 créditos)",
+      "ELEC_3": "Electiva 3 - semestre 4 (4 créditos)",
+      "ELEC_4": "Electiva 4 - semestre 4 (4 créditos)",
+      "TEO_1": "Teología 1 - semestre 5 (2 créditos)",
+      "TEO_2": "Teología 2 - semestre 6 (2 créditos)",
+      "FIL_1": "Filosofía 1 - semestre 7 (2 créditos)",
+      "FIL_2": "Filosofía 2 - semestre 8 (2 créditos)",
+      "COMP_S7A": "Complementaria - semestre 7 (4 créditos)",
+      "COMP_S7B": "Complementaria - semestre 7 (4 créditos)",
+      "COMP_S8": "Complementaria - semestre 8 (4 créditos)",
+      "ENF_1": "Énfasis 1 - semestre 7 (4 créditos)",
+      "ENF_2": "Énfasis 2 - semestre 8 (4 créditos)",
+      "ENF_3": "Énfasis 3 - semestre 8 (4 créditos)"
+    }
+  }
 }

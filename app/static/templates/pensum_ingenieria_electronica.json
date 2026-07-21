@@ -1,0 +1,652 @@
+{
+  "version": "1.0",
+  "exportedAt": "2026-07-17T12:41:22.426Z",
+  "materias": [
+    {
+      "codigo": "001295",
+      "nombre": "Cálculo Diferencial",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "001290",
+      "nombre": "Álgebra Lineal",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33755",
+      "nombre": "Sistemas Organizacionales",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33763",
+      "nombre": "Introducción a la Ingeniería",
+      "creditos": 2,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "1340",
+      "nombre": "Física Mecánica",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "1449",
+      "nombre": "Principios de Economía",
+      "creditos": 3,
+      "semestre": 1,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "1297",
+      "nombre": "Cálculo Integral",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "001295"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33738",
+      "nombre": "Ergonomía y Factores Humanos",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "33755"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33733",
+      "nombre": "Diseño en Ingeniería (Proyecto CDIO Año 1)",
+      "creditos": 2,
+      "semestre": 2,
+      "prerrequisitos": [
+        "33763"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33734",
+      "nombre": "Fundamentos de los Materiales",
+      "creditos": 3,
+      "semestre": 2,
+      "prerrequisitos": [
+        "33735"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "2356",
+      "nombre": "Epistemología de la Ingeniería",
+      "creditos": 2,
+      "semestre": 2,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "33735",
+      "nombre": "Innovación y Diseño de Producto",
+      "creditos": 2,
+      "semestre": 2,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "1299",
+      "nombre": "Cálculo Vectorial",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001290",
+        "1297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "1300",
+      "nombre": "Ecuaciones Diferenciales",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "001290",
+        "1297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33737",
+      "nombre": "Diseño Sistémico",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "33755",
+        "1449"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33743",
+      "nombre": "Ingeniería Financiera",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "1449"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "2544",
+      "nombre": "Significación Teológica",
+      "creditos": 2,
+      "semestre": 3,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "23710",
+      "nombre": "Física, Electricidad y Magnetismo",
+      "creditos": 3,
+      "semestre": 3,
+      "prerrequisitos": [
+        "1340",
+        "1297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33732",
+      "nombre": "Probabilidad y Estadística Inferencial",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "1297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33698",
+      "nombre": "Introducción a la Programación",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33739",
+      "nombre": "Fundamentos de las Operaciones",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "33738"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33749",
+      "nombre": "Procesos Físicos",
+      "creditos": 2,
+      "semestre": 4,
+      "prerrequisitos": [
+        "33734",
+        "1340"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "1341",
+      "nombre": "Física de Fluidos y Termodinámica",
+      "creditos": 3,
+      "semestre": 4,
+      "prerrequisitos": [
+        "1340",
+        "1297"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33736",
+      "nombre": "Automatización",
+      "creditos": 2,
+      "semestre": 4,
+      "prerrequisitos": [
+        "23710"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33745",
+      "nombre": "Modelos Estadísticos",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "33732"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33746",
+      "nombre": "Optimización Lineal",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "001290",
+        "001295",
+        "33698"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33742",
+      "nombre": "Ingeniería Económica",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "33743"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33751",
+      "nombre": "Proyecto CDIO Año 3",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "33733",
+        "33737"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33750",
+      "nombre": "Procesos Químicos",
+      "creditos": 2,
+      "semestre": 5,
+      "prerrequisitos": [
+        "33749",
+        "1341"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33757",
+      "nombre": "Taller de Física Aplicada",
+      "creditos": 3,
+      "semestre": 5,
+      "prerrequisitos": [
+        "1341",
+        "23710"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33740",
+      "nombre": "Gestión y Control de Calidad",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [
+        "33745",
+        "33739"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33748",
+      "nombre": "Procesos Estocásticos",
+      "creditos": 3,
+      "semestre": 6,
+      "prerrequisitos": [
+        "33732",
+        "1299",
+        "1300"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0284C7",
+      "tipo": "basicas"
+    },
+    {
+      "codigo": "33744",
+      "nombre": "Modelos de Sistemas Logísticos",
+      "creditos": 3,
+      "semestre": 6,
+      "prerrequisitos": [
+        "33732",
+        "33746",
+        "33739"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33747",
+      "nombre": "Planeación y Programación de las Operaciones",
+      "creditos": 3,
+      "semestre": 6,
+      "prerrequisitos": [
+        "33746",
+        "33739"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33762",
+      "nombre": "Gestión de Proyectos",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [
+        "33742"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "2476",
+      "nombre": "Fe y Compromiso del Ingeniero",
+      "creditos": 2,
+      "semestre": 6,
+      "prerrequisitos": [
+        "33751"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "33754",
+      "nombre": "Simulación de Eventos Discretos",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [
+        "33745",
+        "33748"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33741",
+      "nombre": "Ingeniería de Mercados",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [
+        "33732",
+        "33737"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "33752",
+      "nombre": "Proyecto CDIO Año 4-1",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "33747",
+        "33762",
+        "33751",
+        "33736"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "32842",
+      "nombre": "Ética, Tecnología e Ingeniería",
+      "creditos": 2,
+      "semestre": 7,
+      "prerrequisitos": [
+        "33751"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "ENF01",
+      "nombre": "Énfasis 1",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "COMP01",
+      "nombre": "Complementaria 1",
+      "creditos": 3,
+      "semestre": 7,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "33753",
+      "nombre": "Proyecto CDIO Año 4-2",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [
+        "33752"
+      ],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#0D9488",
+      "tipo": "nucleo"
+    },
+    {
+      "codigo": "34541",
+      "nombre": "Constitución y Derecho Laboral",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#D97706",
+      "tipo": "sociohumano"
+    },
+    {
+      "codigo": "ENF02",
+      "nombre": "Énfasis 2",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "ENF03",
+      "nombre": "Énfasis 3",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#7C3AED",
+      "tipo": "enfasis"
+    },
+    {
+      "codigo": "COMP02",
+      "nombre": "Complementaria 2",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "COMP03",
+      "nombre": "Complementaria 3",
+      "creditos": 3,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#DB2777",
+      "tipo": "complementarias"
+    },
+    {
+      "codigo": "ELEC01",
+      "nombre": "Electiva 1",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "ELEC02",
+      "nombre": "Electiva 2",
+      "creditos": 2,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    },
+    {
+      "codigo": "ELEC03",
+      "nombre": "Electiva 3",
+      "creditos": 4,
+      "semestre": 8,
+      "prerrequisitos": [],
+      "correquisitos": [],
+      "estado": "pending",
+      "color": "#4F46E5",
+      "tipo": "electivas"
+    }
+  ],
+  "calificaciones": []
+}
