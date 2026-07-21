@@ -1052,8 +1052,6 @@
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-accent-500">
                                 <option value="pending">Pendiente</option>
                                 <option value="enrolled">En curso</option>
-                                <option value="passed">Aprobada</option>
-                                <option value="failed">Reprobada</option>
                                 <option value="dropped">Retirada</option>
                             </select>
                         </div>
@@ -1585,6 +1583,13 @@
         loadPensumData();
         updatePlanSelectorUI();
         closePlanDropdown();
+        // Rebuild graph if currently visible
+        if (currentView === 'graph' && graphState.canvas) {
+            buildGraphData();
+            calculateNodePositions();
+            findBottlenecks();
+            drawGraph();
+        }
     });
     
     // ==================== PLAN SELECTOR FUNCTIONS ====================
@@ -2241,6 +2246,12 @@
         if (materia.estado === 'passed' || materia.estado === 'failed') {
             return { valid: false, reason: 'No puedes mover materias aprobadas o reprobadas' };
         }
+        if(materia.originalCodigo) {
+            const original = materias.find( m=> m.codigo === materia.originalCodigo);
+            if(original && targetSemester <= original.semestre) {
+                return {valid: false, reason:`Es repetición de "${original.nombre}" reprobada en semestre ${original.semestre}`};
+            }
+        }
         
         // Check duplicate: same code already in target semester
         const alreadyInTarget = materias.find(m => m.codigo === materia.codigo && m.semestre === targetSemester);
@@ -2333,7 +2344,7 @@
         let totalPoints = 0, gradedCredits = 0;
         calificaciones.forEach(cal => {
             const m = materias.find(mat => mat.codigo === cal.codigo_materia);
-            if (m && cal.nota !== undefined && cal.nota !== null) {
+            if (m && cal.nota !== undefined && cal.nota !== null && cal.nota >= 3.0) {
                 totalPoints += cal.nota * m.creditos;
                 gradedCredits += m.creditos;
             }
@@ -2575,8 +2586,13 @@
         
         // Show and populate status/grade section
         document.getElementById('materia-status-grade-section').classList.remove('hidden');
-        document.getElementById('materia-status').value = materia.estado || 'pending';
-        
+        const manualStatuses = ['pending', 'enrolled', 'dropped'];
+        document.getElementById('materia-status').value = manualStatuses.includes(materia.estado) ? materia.estado : 'pending';
+        const gradeEl = document.getElementById('materia-grade');
+        const isDropped = materia.estado === 'dropped';
+        gradeEl.disabled = isDropped;
+        gradeEl.classList.toggle('opacity-50',isDropped);
+        gradeEl.classList.toggle('cursor-not-allowed', isDropped);
         // Get calificacion if exists
         const cal = storage.getCalificacion(codigo);
         document.getElementById('materia-grade').value = cal?.nota ?? '';
@@ -2612,12 +2628,29 @@
                 return;
             }
             
-            // Check duplicate on new
+            // Check duplicate on new code and name
             if (!editCode) {
                 const existing = storage.getMateria(codigo);
                 if (existing) {
                     App.showAlert('Ya existe una materia con este código', 'error');
                     return;
+                }
+                const normalize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                const sameName = storage.getMaterias().find(m =>normalize(m.nombre) === normalize(nombre));
+                if(sameName) {
+                    App.showAlert(`Ya existe una materia con el nombre "${sameName.nombre}" (${sameName.codigo})`, 'error');
+                    return;
+                }
+            }
+
+            if(editCode) {
+                const editingMateria = storage.getMateria(editCode);
+                if(editingMateria?.originalCodigo) {
+                    const original = storage.getMateria(editingMateria.originalCodigo);
+                    if(original && semestre <=original.semestre) {
+                        App.showAlert(`Es repetición de "${original.nombre}" reprobada en semestre ${original.semestre}`, 'error');
+                        return;
+                    }
                 }
             }
             
@@ -2635,8 +2668,29 @@
             
             // Get status (only when editing)
             let estado = 'pending';
+            let notaToSave = null;
             if (editCode) {
-                estado = document.getElementById('materia-status').value;
+                const gradeInput = document.getElementById('materia-grade').value;
+                if(gradeInput !== '') {
+                    const nota = parseFloat(gradeInput);
+                    if(!isNaN(nota) && nota >= 0 && nota <=5){
+                        notaToSave = nota;
+                        estado = nota >= 3.0 ? 'passed': 'failed';
+                    }
+                } else {
+                    estado = document.getElementById('materia-status').value
+                }
+            }
+            
+            // Auto-derive passed/failed from grade
+            const gradeInput = document.getElementById('materia-grade');
+            const gradeValue = gradeInput ? gradeInput.value : '';
+            let nota = null;
+            if (gradeValue !== '') {
+                nota = parseFloat(gradeInput.value);
+                if (!isNaN(nota) && nota >= 0 && nota <= 5) {
+                    estado = nota >= 3 ? 'passed' : 'failed';
+                }
             }
             
             const materia = {
@@ -2649,27 +2703,26 @@
                 color,
                 tipo,
                 estado
-            };
-            
+            }; 
+            const prevEstado = editCode ? storage.getMateria(editCode)?.estado : null;
             storage.saveMateria(materia);
             
             // Save grade if editing and value provided
+            if (editCode && nota !== null) {
+                storage.saveCalificacion({
+                    codigo_materia: editCode,
+                    nota: nota,
+                    fecha: new Date().toISOString()
+                });
+            }
+            
+            // Handle passed/failed side effects
             if (editCode) {
-                const gradeInput = document.getElementById('materia-grade').value;
-                if (gradeInput !== '') {
-                    const nota = parseFloat(gradeInput);
-                    if (!isNaN(nota) && nota >= 0 && nota <= 5) {
-                        storage.saveCalificacion({
-                            codigo_materia: editCode,
-                            nota: nota,
-                            fecha: new Date().toISOString()
-                        });
-                    }
-                }
-                
-                // Handle failed subject: create a copy in the next semester
-                if (estado === 'failed') {
+                if (estado === 'failed' && prevEstado !== 'failed') {
                     handleFailedSubject(materia);
+                }
+                if(estado === 'passed' && prevEstado !== 'passed') {
+                    handlePassedSubject(materia);
                 }
             }
             
@@ -2691,6 +2744,16 @@
             }
             lastTipo = this.value;
         });
+        const statusSelect = document.getElementById('materia-status');
+        const gradeInput = document.getElementById('materia-grade');
+        function syncGradeWithStatus() {
+            const isDropped = statusSelect.value === 'dropped';
+            gradeInput.disabled = isDropped;
+            gradeInput.classList.toggle('opacity-50', isDropped);
+            gradeInput.classList.toggle('cursor-not-allowed', isDropped);
+            if(isDropped) gradeInput.value = '';
+        }
+        statusSelect.addEventListener('change', syncGradeWithStatus);
     }
     
     function deleteMateria(codigo) {
@@ -2701,6 +2764,112 @@
         App.showAlert('Materia eliminada', 'success');
     }
     
+    function getRootCodigo(materia, materias) {
+        let current = materia;
+        const visited = new Set();
+        while (current.originalCodigo && !visited.has(current.codigo)) {
+            visited.add(current.codigo);
+            const parent = materias.find(m => m.codigo === current.originalCodigo);
+            if (!parent) {
+                break;
+            }
+            current = parent;
+        }
+        return current.codigo;
+    }
+    function cascadeMove(materia, minSemestre,materiasList, visited = new Set()){
+        if(!materia || materia.estado !== 'pending' || visited.has(materia.codigo)) return;
+        visited.add(materia.codigo);
+
+        if(materia.semestre < minSemestre) {
+            const config = storage.getConfiguracion?.() || {max_creditos_semestre: 24};
+            const maxCredits = config.max_creditos_semestre || 24;
+            let target = minSemestre;
+            while (target <=15) {
+                const used = materiasList 
+                    .filter(x=> x.semestre === target && x.codigo !== materia.codigo)
+                    .reduce((s,x) => s + (x.creditos || 0), 0);
+                if (used + (materia.creditos || 0) <= maxCredits) break;
+                target++; 
+            }
+            materia.semestre = target;
+            storage.saveMateria(materia);
+        }
+        const actual = materia.semestre;
+        materiasList 
+            .filter(m => (m.prerrequisitos || []).includes(materia.codigo) && m.estado === 'pending')
+            .forEach(dep => cascadeMove(dep,actual +1, materiasList, visited));
+        materiasList
+            .filter(m =>(m.correquisitos || []).includes(materia.codigo) && m.estado === 'pending' && m.semestre < actual)
+            .forEach(co => cascadeMove(co,actual,materiasList,visited));
+    }
+
+    function collectRepetitionChain(originalCodigo, allMaterias){
+        const result = [];
+        const queue = [originalCodigo];
+        while(queue.length > 0) {
+            const cod = queue.shift();
+            allMaterias.filter(m => m.originalCodigo === cod).forEach(r => {
+                result.push(r.codigo);
+                queue.push(r.codigo);
+            });
+        }
+        return result;
+    }
+    function cascadeMoveBack(materia, allMaterias, visited = new Set()) {
+        if (visited.has(materia.codigo) || materia.estado !== 'pending') return;
+        visited.add(materia.codigo);
+
+        let minSem = 1;
+        (materia.prerrequisitos || []).forEach(preqCod => {
+            const prereq = allMaterias.find(m => m.codigo === preqCod);
+            if (prereq) minSem = Math.max(minSem, prereq.semestre + 1);
+        });
+
+        if (materia.semestre > minSem) {
+            const config = storage.getConfiguracion?.() || { max_creditos_semestre: 24 };
+            const maxCredits = config.max_creditos_semestre || 24;
+            for (let s = minSem; s < materia.semestre; s++) {
+                const used = allMaterias
+                    .filter(x => x.semestre === s && x.codigo !== materia.codigo)
+                    .reduce((sum, x) => sum + (x.creditos || 0), 0);
+                if (used + (materia.creditos || 0) <= maxCredits) {
+                    materia.semestre = s;
+                    storage.saveMateria(materia);
+                    break;
+                }
+            }
+        }
+        allMaterias
+            .filter(m => (m.prerrequisitos || []).includes(materia.codigo) && m.estado === 'pending')
+            .forEach(dep => cascadeMoveBack(dep, allMaterias, visited));
+    }
+    function handlePassedSubject(passedMateria) {
+        const allMaterias = storage.getMaterias();
+        const repChain = collectRepetitionChain(passedMateria.codigo, allMaterias);
+        if (repChain.length === 0) return;
+
+        const freshMaterias = storage.getMaterias();
+        repChain.forEach(repCod => {
+            freshMaterias.forEach(m => {
+                let changed = false;
+                if ((m.prerrequisitos || []).includes(repCod)) {
+                    m.prerrequisitos = m.prerrequisitos.filter(p => p !== repCod);
+                    changed = true;
+                }
+                if ((m.correquisitos || []).includes(repCod)) {
+                    m.correquisitos = m.correquisitos.filter(p => p !== repCod);
+                    changed = true;
+                }
+                if (changed) storage.saveMateria(m);
+            });
+            storage.deleteMateria(repCod);
+        });
+        const updatedMaterias = storage.getMaterias();
+        updatedMaterias
+            .filter(m => (m.prerrequisitos || []).includes(passedMateria.codigo) && m.estado === 'pending')
+            .forEach(dep => cascadeMoveBack(dep, updatedMaterias));
+    }
     // Handle failed subject: create a copy in the next semester and update dependencies
     function handleFailedSubject(failedMateria) {
         const materias = storage.getMaterias();
@@ -2750,20 +2919,21 @@
         
         // Update any materias that have the failed subject as prerequisite
         // They now need to wait for the repeated version
-        materias.forEach(m => {
-            if (m.prerrequisitos?.includes(failedMateria.codigo)) {
-                // Push dependent subjects to future semesters if needed
-                if (m.semestre <= targetSemester && m.estado === 'pending') {
-                    m.semestre = targetSemester + 1;
+        const rootCodigo = getRootCodigo(failedMateria, materias);
+        const relevantCodigos = new Set([failedMateria.codigo, rootCodigo]);
+        const freshMaterias = storage.getMaterias();
+        freshMaterias.forEach(m => {
+            const prereqs = m.prerrequisitos || [];
+            if (prereqs.some(p => relevantCodigos.has(p))) {
+                if (!prereqs.includes(newCodigo)) {
+                    m.prerrequisitos = [...prereqs, newCodigo];
                     storage.saveMateria(m);
                 }
+                cascadeMove(m, targetSemester + 1, freshMaterias);
             }
-            // Also check correquisites - they need to move together
-            if (m.correquisitos?.includes(failedMateria.codigo) && m.estado === 'pending') {
-                if (m.semestre < targetSemester) {
-                    m.semestre = targetSemester;
-                    storage.saveMateria(m);
-                }
+            const coreqs = m.correquisitos || [];
+            if (coreqs.some(p => relevantCodigos.has(p)) && m.estado === 'pending' && m.semestre < targetSemester) {
+                cascadeMove(m, targetSemester, freshMaterias);
             }
         });
         
@@ -3034,7 +3204,7 @@
         let totalPoints = 0, gradedCredits = 0;
         calificaciones.forEach(cal => {
             const m = materias.find(mat => mat.codigo === cal.codigo_materia);
-            if (m && cal.nota !== undefined && cal.nota !== null) {
+            if (m && cal.nota !== undefined && cal.nota !== null && cal.nota >= 3.0) {
                 totalPoints += cal.nota * m.creditos;
                 gradedCredits += m.creditos;
             }
@@ -3238,7 +3408,7 @@
         let currentPoints = 0, currentCredits = 0;
         calificaciones.forEach(cal => {
             const m = materias.find(mat => mat.codigo === cal.codigo_materia);
-            if (m && cal.nota !== undefined && cal.nota !== null) {
+            if (m && cal.nota !== undefined && cal.nota !== null && cal.nota >= 3.0) {
                 currentPoints += cal.nota * m.creditos;
                 currentCredits += m.creditos;
             }
@@ -4439,8 +4609,9 @@
     }
     
     function findBottlenecks() {
-        // Find nodes that unlock the most other nodes
+        // Find nodes that unlock the most other nodes (excluding passed ones)
         const bottlenecks = graphState.nodes
+            .filter(node => node.status !== 'passed')
             .map(node => ({
                 node,
                 dependentCount: getAllDependents(node.id).size
@@ -4756,7 +4927,7 @@
     // Calculate GPA (Índice) from materias with grades
     // Índice = suma(nota * créditos) / suma(créditos) para materias aprobadas
     function calculateGPA(materiasWithGrades) {
-        const graded = materiasWithGrades.filter(m => m.estado === 'passed' && m.calificacion !== null);
+        const graded = materiasWithGrades.filter(m => m.estado === 'passed' && m.calificacion !== null && m.calificacion >= 3.0);
         if (graded.length === 0) return 0;
         
         let totalPoints = 0;
@@ -4792,13 +4963,16 @@
         console.log('Stats view initialized');
     }
     
-    // Redraw charts when theme changes
+    // Redraw charts and graph when theme changes
     window.addEventListener('themechange', () => {
         if (currentView === 'stats') {
             renderGPAChart();
             renderCreditsChart();
             renderGradesChart();
             renderTypesChart();
+        }
+        if (currentView === 'graph' && graphState.canvas) {
+            drawGraph();
         }
     });
     

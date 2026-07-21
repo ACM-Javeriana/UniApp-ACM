@@ -10,7 +10,7 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestión por Semestre</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Administra las materias de cada semestre</p>
         </div>
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 lg:hidden">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Seleccionar semestre:</label>
             <select id="semester-select" onchange="loadPeriod(this.value)"
                     class="w-full sm:w-auto border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-accent-500 focus:border-accent-500 transition-colors">
@@ -51,6 +51,15 @@
                 <span class="text-sm text-gray-500 dark:text-gray-400">Clic en <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg> para mover</span>
             </div>
         </div>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 pb-3 mb-1 border-b border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-300 dark:bg-gray-600"></span>Pendiente</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>En curso</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>Aprobada</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>Reprobada</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>Retirada</span>
+            <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-gray-500"></span>Bloqueada</span>
+        </div>
+
         
         <div id="semester-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Course cards will be populated here -->
@@ -71,37 +80,6 @@
         </div>
     </div>
     
-    <!-- Status Legend -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 transition-colors">
-        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Leyenda de Estados</h3>
-        <div class="flex flex-wrap gap-x-4 gap-y-2 tablet-stack-actions">
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600"></span>
-                <span class="text-sm text-gray-600 dark:text-gray-400">Pendiente</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                <span class="text-sm text-gray-600">En curso</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-green-500"></span>
-                <span class="text-sm text-gray-600">Aprobada</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-red-500"></span>
-                <span class="text-sm text-gray-600">Reprobada</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                <span class="text-sm text-gray-600">Retirada</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-3 h-3 rounded-full bg-gray-500"></span>
-                <span class="text-sm text-gray-600">Bloqueada</span>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Move Confirmation Modal -->
 <div id="move-modal" class="hidden fixed inset-0 z-50 overflow-y-auto">
@@ -398,9 +376,33 @@
         document.getElementById('move-modal').classList.remove('hidden');
     }
 
+    function cascadeDependents(codigo, movedToSemester, allMaterias, visited = new Set()) {
+        if (visited.has(codigo)) return;
+        visited.add(codigo);
+        const config = storage.getConfiguracion?.() || {max_creditos_semestre: 24};
+        const maxCredits = config.max_creditos_semestre || 24;
+        allMaterias 
+            .filter(m => (m.prerrequisitos || []).includes(codigo) && m.estado === 'pending')
+            .forEach(dep => {
+                if(dep.semestre <= movedToSemester) {
+                    let target = movedToSemester +1;
+                    while(target <= 15) {
+                        const used = allMaterias
+                            .filter(x=> x.semestre === target && x.codigo !== dep.codigo)
+                            .reduce((s,x) => s + (x.creditos || 0), 0);
+                        if(used + (dep.creditos || 0) <= maxCredits) break;
+                        target++
+                    }
+                    dep.semestre = target;
+                    storage.saveMateria(dep);
+                    cascadeDependents(dep.codigo,target,allMaterias,visited);
+                }
+            });
+    }
     function confirmMove(codigo, targetPeriod) {
         const materia = storage.getMateria(codigo);
         if (!materia) return;
+        const prevSemester = materia.semestre;
 
         if (!isINT(targetPeriod)) {
             const targetSemester = parseInt(targetPeriod);
@@ -433,6 +435,9 @@
         }
 
         storage.saveMateria(materia);
+        if(!isINT(targetPeriod) && parseInt(targetPeriod) > prevSemester) {
+            cascadeDependents(codigo, parseInt(targetPeriod), storage.getMaterias());
+        }
         closeMoveModal();
         deselectMateria();
         loadPeriod(currentPeriod);
@@ -453,7 +458,7 @@
 
         materias.forEach(m => {
             const cal = calificaciones.find(c => c.codigo_materia === m.codigo);
-            if (cal && cal.nota !== null && cal.nota !== undefined) {
+            if (cal && cal.nota !== null && cal.nota !== undefined && cal.nota >= 3.0) {
                 totalPoints += cal.nota * m.creditos;
                 gradedCredits += m.creditos;
             }

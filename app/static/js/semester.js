@@ -174,7 +174,7 @@ const Semester = {
 
         this.materias.forEach(m => {
             const cal = calificaciones.find(c => c.codigo_materia === m.codigo);
-            if (cal && cal.nota !== null && cal.nota !== undefined) {
+            if (cal && cal.nota !== null && cal.nota !== undefined && cal.nota >= 3.0) {
                 totalPoints += cal.nota * m.creditos;
                 totalCredits += m.creditos;
             }
@@ -252,16 +252,16 @@ const Semester = {
         const statusSelect = document.getElementById('courseStatus');
         const gradeInput = document.getElementById('courseGrade');
 
-        // Update status
+        // Update status from dropdown (only pending/enrolled/dropped)
         if (statusSelect) {
             this.selectedCourse.estado = statusSelect.value;
-            storage.saveMateria(this.selectedCourse);
         }
 
-        // Update grade
+        // Update grade and auto-derive passed/failed
         if (gradeInput && gradeInput.value !== '') {
             const nota = parseFloat(gradeInput.value);
             if (!isNaN(nota) && nota >= 0 && nota <= 5) {
+                this.selectedCourse.estado = nota >= 3 ? 'passed' : 'failed';
                 storage.saveCalificacion({
                     codigo_materia: this.selectedCourse.codigo,
                     nota: nota,
@@ -269,6 +269,8 @@ const Semester = {
                 });
             }
         }
+
+        storage.saveMateria(this.selectedCourse);
 
         this.hideCourseModal();
         this.loadSemester();
@@ -282,7 +284,7 @@ const Semester = {
         const materia = this.materias.find(m => m.codigo === codigo);
         if (!materia) return;
 
-        const statusOrder = ['pending', 'enrolled', 'passed', 'failed', 'dropped'];
+        const statusOrder = ['pending', 'enrolled', 'dropped'];
         const currentIndex = statusOrder.indexOf(materia.estado || 'pending');
         const nextIndex = (currentIndex + 1) % statusOrder.length;
         
@@ -349,7 +351,7 @@ const Semester = {
 
             allMaterias.forEach(m => {
                 const cal = calificaciones.find(c => c.codigo_materia === m.codigo);
-                if (cal && cal.nota !== null) {
+                if (cal && cal.nota !== null && cal.nota >= 3.0) {
                     completedPoints += cal.nota * m.creditos;
                     completedCredits += m.creditos;
                 } else if (m.estado !== 'dropped') {

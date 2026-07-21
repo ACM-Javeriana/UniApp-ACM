@@ -332,6 +332,51 @@ const Schedule = {
                 hora_fin: block.querySelector('.block-end').value
             });
         });
+        const dayNames = {
+            monday: 'lunes', tuesday: 'martes', wednesday: 'miércoles',
+            thursday: 'jueves', friday: 'viernes', saturday: 'sábado'
+        };
+
+        for (const b of bloques) {
+            if (!b.hora_inicio || !b.hora_fin || b.hora_inicio >= b.hora_fin) {
+                App.showAlert({
+                    title: 'Horario inválido',
+                    detail: `El bloque del ${dayNames[b.dia] || b.dia} debe terminar después de comenzar.`
+                }, 'error');
+                return;
+            }
+        }
+
+        const overlaps = (a, b) => a.dia === b.dia && a.hora_inicio < b.hora_fin && b.hora_inicio < a.hora_fin;
+
+        for (let i = 0; i < bloques.length; i++) {
+            for (let j = i + 1; j < bloques.length; j++) {
+                if (overlaps(bloques[i], bloques[j])) {
+                    App.showAlert({
+                        title: 'Bloques en conflicto',
+                        detail: 'Dos bloques de esta misma clase se cruzan en el mismo día.'
+                    }, 'error');
+                    return;
+                }
+            }
+        }
+
+        for (const newBloque of bloques) {
+            for (const existingClase of this.clases) {
+                if (existingClase.id === claseId) continue;
+                for (const eb of (existingClase.bloques_horario || [])) {
+                    if (overlaps(newBloque, eb)) {
+                        const materia = storage.getMateria(existingClase.codigo_materia);
+                        const nombre = materia ? materia.nombre : existingClase.codigo_materia;
+                        App.showAlert({
+                            title: 'Conflicto de horario',
+                            detail: `El ${dayNames[eb.dia] || eb.dia} de ${eb.hora_inicio} a ${eb.hora_fin} ya está ocupado por "${nombre}".`
+                        }, 'error');
+                        return;
+                    }
+                }
+            }
+        }
 
         const clase = {
             id: claseId || undefined,

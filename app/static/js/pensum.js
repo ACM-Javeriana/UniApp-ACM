@@ -178,7 +178,7 @@ const Pensum = {
 
         calificaciones.forEach(cal => {
             const materia = this.materias.find(m => m.codigo === cal.codigo_materia);
-            if (materia && cal.nota !== null) {
+            if (materia && cal.nota !== null && cal.nota >= 3.0) {
                 totalPoints += cal.nota * materia.creditos;
                 totalCredits += materia.creditos;
             }
