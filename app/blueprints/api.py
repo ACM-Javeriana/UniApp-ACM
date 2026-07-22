@@ -2,6 +2,7 @@
 API Blueprint
 REST API endpoints for frontend communication
 """
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import os
 
@@ -173,38 +174,27 @@ def pull_data():
     if not user_id:
         return jsonify({'error': 'User ID required'}), 400
     
+    fetchers = {
+        'pensum':        lambda: DatabaseService.get_pensum(user_id, access_token),
+        'clases':        lambda: DatabaseService.get_clases(user_id, access_token),
+        'configuracion': lambda: DatabaseService.get_configuracion(user_id, access_token),
+        'calificaciones':lambda: DatabaseService.get_calificaciones(user_id, access_token),
+        'franjas':       lambda: DatabaseService.get_franjas(user_id, access_token),
+    }
+
+    results = {}
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(fn): key for key, fn in fetchers.items()}
+        for future in as_completed(futures):
+            results[futures[future]] = future.result()
+
     data = {}
     updated_at = {}
-    
-    pensum_result = DatabaseService.get_pensum(user_id, access_token)
-    if pensum_result.get('data') is not None:
-        data['pensum'] = pensum_result['data']
-    if pensum_result.get('updated_at'):
-        updated_at['pensum'] = pensum_result['updated_at']
-    
-    clases_result = DatabaseService.get_clases(user_id, access_token)
-    if clases_result.get('data') is not None:
-        data['clases'] = clases_result['data']
-    if clases_result.get('updated_at'):
-        updated_at['clases'] = clases_result['updated_at']
-    
-    config_result = DatabaseService.get_configuracion(user_id, access_token)
-    if config_result.get('data') is not None:
-        data['configuracion'] = config_result['data']
-    if config_result.get('updated_at'):
-        updated_at['configuracion'] = config_result['updated_at']
-    
-    calificaciones_result = DatabaseService.get_calificaciones(user_id, access_token)
-    if calificaciones_result.get('data') is not None:
-        data['calificaciones'] = calificaciones_result['data']
-    if calificaciones_result.get('updated_at'):
-        updated_at['calificaciones'] = calificaciones_result['updated_at']
-    
-    franjas_result = DatabaseService.get_franjas(user_id, access_token)
-    if franjas_result.get('data') is not None:
-        data['franjas'] = franjas_result['data']
-    if franjas_result.get('updated_at'):
-        updated_at['franjas'] = franjas_result['updated_at']
+    for key, result in results.items():
+        if result.get('data') is not None:
+            data[key] = result['data']
+        if result.get('updated_at'):
+            updated_at[key] = result['updated_at']
 
     if updated_at:
         data['_updated_at'] = updated_at

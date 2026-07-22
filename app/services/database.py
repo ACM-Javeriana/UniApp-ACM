@@ -3,6 +3,7 @@ Database Service
 Handles Supabase connection and operations for authenticated users
 """
 import os
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
 # Optional Supabase import
@@ -562,34 +563,39 @@ class DatabaseService:
         if not client:
             return {'error': 'Database not configured'}
         
-        results = {}
-        
-        # Helper function to upsert data
-        def upsert_data(table_name: str, data_value) -> dict:
+        table_map = {
+            'pensum':        'pensums',
+            'clases':        'clases',
+            'configuracion': 'configuraciones',
+            'calificaciones':'calificaciones',
+            'franjas':       'franjas',
+        }
+
+        def upsert_data(key: str, table_name: str, data_value) -> tuple:
             try:
                 response = client.table(table_name).upsert({
                     'user_id': user_id,
                     'data': data_value,
                     'updated_at': 'now()'
                 }, on_conflict='user_id').execute()
-                return {'success': True, 'data': response.data}
+                return key, {'success': True, 'data': response.data}
             except Exception as e:
-                return {'error': str(e)}
-        
-        if 'pensum' in data:
-            results['pensum'] = upsert_data('pensums', data['pensum'])
-        
-        if 'clases' in data:
-            results['clases'] = upsert_data('clases', data['clases'])
-        
-        if 'configuracion' in data:
-            results['configuracion'] = upsert_data('configuraciones', data['configuracion'])
-        
-        if 'calificaciones' in data:
-            results['calificaciones'] = upsert_data('calificaciones', data['calificaciones'])
-        
-        if 'franjas' in data:
-            results['franjas'] = upsert_data('franjas', data['franjas'])
+                return key, {'error': str(e)}
+
+        tasks = {
+            key: (table_map[key], data[key])
+            for key in table_map if key in data
+        }
+
+        results = {}
+        with ThreadPoolExecutor(max_workers=len(tasks) or 1) as executor:
+            futures = {
+                executor.submit(upsert_data, key, table, val): key
+                for key, (table, val) in tasks.items()
+            }
+            for future in as_completed(futures):
+                k, result = future.result()
+                results[k] = result
         
         # Check for errors
         errors = [k for k, v in results.items() if 'error' in v]
