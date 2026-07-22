@@ -1,5 +1,5 @@
 <!-- Auth Modal -->
-<div id="authModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+<div id="authModal" class="hidden fixed inset-0 z-[70] overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
         <!-- Background overlay -->
         <div class="fixed inset-0 transition-opacity bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80" onclick="closeAuthModal()"></div>
@@ -267,15 +267,16 @@ document.getElementById('signin-form').addEventListener('submit', async function
         
         // Save auth data
         saveAuthData(data.user, data.session);
-        
+
         // Update UI
         updateAuthUI(true, data.user.email);
         closeAuthModal();
-        
+        if (typeof dismissSplash === 'function') dismissSplash();
+
         if (typeof App !== 'undefined' && App.showAlert) {
             App.showAlert('¡Bienvenido!', 'success');
         }
-        
+
         // Optionally pull data from cloud
         await pullFromCloud();
         
@@ -360,6 +361,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
 // Sign Out
 async function signOut() {
     try {
+        await syncToCloud();
         const token = authSession?.access_token;
         
         await fetch('/api/auth/signout', {
@@ -373,16 +375,8 @@ async function signOut() {
     } catch (error) {
         console.error('Sign out error:', error);
     } finally {
-        // Always clear local auth data
         clearAuthData();
-        updateAuthUI(false);
-        
-        const userMenu = document.getElementById('user-menu');
-        if (userMenu) userMenu.classList.add('hidden');
-        
-        if (typeof App !== 'undefined' && App.showAlert) {
-            App.showAlert('Sesión cerrada', 'success');
-        }
+        window.location.reload();
     }
 }
 
@@ -797,6 +791,7 @@ async function pullFromCloud() {
 document.addEventListener('DOMContentLoaded', function() {
     if (loadAuthData()) {
         updateAuthUI(true, currentUser.email);
+        if (typeof dismissSplash === 'function') dismissSplash();
         pullFromCloud();
     }
 });

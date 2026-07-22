@@ -77,7 +77,9 @@ def create_app(config_name: str = None) -> Flask:
 
         return {
             'commit_sha': commit_sha[:7] if commit_sha else 'dev',
-            'asset_version': asset_version
+            'asset_version': asset_version,
+            'supabase_url': app.config.get('SUPABASE_URL', ''),
+            'supabase_key': app.config.get('SUPABASE_ANON_KEY', ''),
         }
     
     # Register main route
