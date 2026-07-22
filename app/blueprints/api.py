@@ -36,6 +36,8 @@ def report_error():
         message=message,
         steps=data.get('steps', '').strip() or None,
         diagnostics=data.get('diagnostics'),
+        page=data.get('page'),
+        user_agent=request.headers.get('User-Agent'),
     )
 
     if 'error' in result:

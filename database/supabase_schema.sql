@@ -147,6 +147,8 @@ CREATE TABLE IF NOT EXISTS errors (
     message TEXT NOT NULL,
     steps TEXT,
     diagnostics JSONB,
+    page TEXT,
+    user_agent TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

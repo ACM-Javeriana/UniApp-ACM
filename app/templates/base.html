@@ -536,6 +536,7 @@
                         message: desc,
                         steps: steps || undefined,
                         diagnostics: d,
+                        page: d.page,
                     }),
                 });
                 if (!res.ok) throw new Error(await res.text());
