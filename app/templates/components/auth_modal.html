@@ -280,20 +280,25 @@ document.getElementById('signin-form').addEventListener('submit', async function
             throw new Error(data.error || 'Error al iniciar sesión');
         }
         
-        // Save auth data
         saveAuthData(data.user, data.session);
-
-        // Update UI
         updateAuthUI(true, data.user.email);
         closeAuthModal();
-        showSplashLoading('Cargando tus datos…');
 
-        // Wipe previous user's local data before loading this user's cloud data
+        // Apply cloud data bundled in the signin response (no extra round-trip)
         clearLocalAppData();
-        await pullFromCloud();
+        const applied = applyCloudData(data.cloud_data || {}, true);
 
-        // If pullFromCloud didn't reload (no cloud data), dismiss splash now
-        if (typeof dismissSplash === 'function') dismissSplash();
+        sessionStorage.setItem('uniapp_session_pulled', '1');
+
+        if (applied) {
+            // Reload so the page reads the newly stored localStorage data
+            sessionStorage.setItem('splash_skip', '1');
+            sessionStorage.setItem('pull_skip', '1');
+            window.location.reload();
+        } else {
+            // New or empty account — no data to load, just enter the app
+            if (typeof dismissSplash === 'function') dismissSplash();
+        }
         
     } catch (error) {
         showError('signin', error.message);
@@ -685,9 +690,9 @@ function shouldApplyCloudData(data, hasCloudData) {
     return cloudMs > localMs + 1000;
 }
 // Sync local data to cloud
-async function syncToCloud() {
+async function syncToCloud(silent = false) {
     if (!currentUser || !authSession) {
-        if (typeof App !== 'undefined' && App.showAlert) {
+        if (!silent && typeof App !== 'undefined' && App.showAlert) {
             App.showAlert('Inicia sesión para sincronizar', 'warning');
         }
         return;
@@ -737,96 +742,128 @@ async function syncToCloud() {
         }
 
         markCloudSyncTimestamp();
-        
-        if (typeof App !== 'undefined' && App.showAlert) {
+
+        if (!silent && typeof App !== 'undefined' && App.showAlert) {
             App.showAlert('Datos sincronizados ✓', 'success');
         }
-        
+
     } catch (error) {
         console.error('Sync error:', error);
-        if (typeof App !== 'undefined' && App.showAlert) {
+        if (!silent && typeof App !== 'undefined' && App.showAlert) {
             App.showAlert('Error al sincronizar: ' + error.message, 'error');
         }
     }
 }
 
-// Pull data from cloud
+// Apply cloud data object to localStorage. Returns true if data was written.
+// forceApply=true skips the timestamp comparison (use after login when local was just cleared).
+function applyCloudData(data, forceApply) {
+    const syncMeta = data.configuracion?._sync_meta;
+    const cloudUpdatedAt = getLatestCloudUpdatedAt(data);
+    const hasCloudData = (Array.isArray(data.pensum) && data.pensum.length > 0) ||
+        (Array.isArray(data.clases) && data.clases.length > 0) ||
+        (Array.isArray(data.calificaciones) && data.calificaciones.length > 0) ||
+        (data.configuracion && Object.keys(data.configuracion).length > 0) ||
+        (Array.isArray(data.franjas) && data.franjas.length > 0) ||
+        (data._updated_at && Object.keys(data._updated_at).length > 0) ||
+        hasSyncMetadata(syncMeta);
+
+    if (!hasCloudData) return false;
+    if (!forceApply && !shouldApplyCloudData(data, hasCloudData)) return false;
+
+    if (hasSyncMetadata(syncMeta)) {
+        restorePlanData(syncMeta);
+    } else {
+        if ('pensum' in data) localStorage.setItem('uniapp_materias', JSON.stringify(data.pensum));
+        if ('clases' in data) localStorage.setItem('uniapp_clases', JSON.stringify(data.clases));
+        if ('calificaciones' in data) localStorage.setItem('uniapp_calificaciones', JSON.stringify(data.calificaciones));
+    }
+
+    if ('configuracion' in data && data.configuracion && typeof data.configuracion === 'object') {
+        const { _sync_meta, ...cleanConfig } = data.configuracion;
+        localStorage.setItem('uniapp_configuracion', JSON.stringify(cleanConfig));
+    }
+
+    if ('franjas' in data) localStorage.setItem('uniapp_franjas', JSON.stringify(data.franjas));
+    markCloudSyncTimestamp(cloudUpdatedAt);
+    return true;
+}
+
+// Pull data from cloud (used on first page load of a session if signin didn't bundle it)
 async function pullFromCloud() {
     if (!currentUser || !authSession) return;
-    
+
     try {
-        // Refresh token first
         await refreshAuthToken();
-        
+
         const response = await fetch(`/api/sync/pull?user_id=${currentUser.id}`, {
-            headers: {
-                'Authorization': `Bearer ${authSession.access_token}`
-            }
+            headers: { 'Authorization': `Bearer ${authSession.access_token}` }
         });
-        
+
         const result = await response.json();
-        
         if (!response.ok || result.error) {
             console.error('Pull error:', result.error);
             return;
         }
-        
-        const data = result.data || {};
-        const syncMeta = data.configuracion?._sync_meta;
-        const cloudUpdatedAt = getLatestCloudUpdatedAt(data);
-        
-        // Check if cloud has data
-        const hasCloudData = (Array.isArray(data.pensum) && data.pensum.length > 0) ||
-            (Array.isArray(data.clases) && data.clases.length > 0) ||
-            (Array.isArray(data.calificaciones) && data.calificaciones.length > 0) ||
-            (data.configuracion && Object.keys(data.configuracion).length > 0) ||
-            (Array.isArray(data.franjas) && data.franjas.length > 0) ||
-            (data._updated_at && Object.keys(data._updated_at).length > 0) ||
-            hasSyncMetadata(syncMeta);
 
-        if (!shouldApplyCloudData(data, hasCloudData)) return;
-        
-        if (hasCloudData) {
-            // Import cloud data for all plans if sync metadata is available
-            if (hasSyncMetadata(syncMeta)) {
-                restorePlanData(syncMeta);
-            } else {
-                if ('pensum' in data) localStorage.setItem('uniapp_materias', JSON.stringify(data.pensum));
-                if ('clases' in data) localStorage.setItem('uniapp_clases', JSON.stringify(data.clases));
-                if ('calificaciones' in data) localStorage.setItem('uniapp_calificaciones', JSON.stringify(data.calificaciones));
-            }
-
-            if ('configuracion' in data && data.configuracion && typeof data.configuracion === 'object') {
-                const { _sync_meta, ...cleanConfig } = data.configuracion;
-                localStorage.setItem('uniapp_configuracion', JSON.stringify(cleanConfig));
-            }
-
-            if ('franjas' in data) localStorage.setItem('uniapp_franjas', JSON.stringify(data.franjas));
-
-            markCloudSyncTimestamp(cloudUpdatedAt);
-            
-            // Reload page to reflect changes — skip splash and second pull on return
+        const applied = applyCloudData(result.data || {}, false);
+        if (applied) {
+            sessionStorage.setItem('uniapp_session_pulled', '1');
             sessionStorage.setItem('splash_skip', '1');
             sessionStorage.setItem('pull_skip', '1');
             window.location.reload();
         }
-        
+
     } catch (error) {
         console.error('Pull error:', error);
     }
 }
+
+// Auto-sync: debounced background save 30s after any local change
+let _autoSyncTimer = null;
+window.addEventListener('storageChanged', function() {
+    if (!currentUser || !authSession) return;
+    clearTimeout(_autoSyncTimer);
+    _autoSyncTimer = setTimeout(function() { syncToCloud(true); }, 30000);
+});
+
+// Best-effort sync on page navigation / close (fire-and-forget)
+window.addEventListener('beforeunload', function() {
+    if (!currentUser || !authSession) return;
+    const syncMeta = buildSyncMetadata();
+    const activePlanData = syncMeta.planesData[syncMeta.planActivo] || {};
+    fetch('/api/sync', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + authSession.access_token
+        },
+        body: JSON.stringify({
+            user_id: currentUser.id,
+            pensum: Array.isArray(activePlanData.materias) ? activePlanData.materias : [],
+            clases: Array.isArray(activePlanData.clases) ? activePlanData.clases : [],
+            calificaciones: Array.isArray(activePlanData.calificaciones) ? activePlanData.calificaciones : [],
+            configuracion: Object.assign({}, getParsedLocal('uniapp_configuracion', {}), { _sync_meta: syncMeta }),
+            franjas: getParsedLocal('uniapp_franjas', [])
+        }),
+        keepalive: true
+    });
+});
 
 // Initialize auth on page load
 document.addEventListener('DOMContentLoaded', function() {
     if (loadAuthData()) {
         updateAuthUI(true, currentUser.email);
         if (typeof dismissSplash === 'function') dismissSplash();
-        // Skip pull if we just reloaded after applying cloud data
         if (sessionStorage.getItem('pull_skip')) {
+            // Consumed: we just reloaded after applying cloud data
             sessionStorage.removeItem('pull_skip');
-        } else {
+            sessionStorage.setItem('uniapp_session_pulled', '1');
+        } else if (!sessionStorage.getItem('uniapp_session_pulled')) {
+            // First page load this session — pull from cloud once
             pullFromCloud();
         }
+        // else: already pulled this session, data is in localStorage — no call needed
     }
 });
 </script>

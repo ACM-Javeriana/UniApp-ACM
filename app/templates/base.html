@@ -307,11 +307,12 @@
     </div>
 
     <script>
-        // Skip splash instantly if returning from a cloud-data reload
+        // Skip splash instantly: after a cloud-data reload, OR when navigating between sections already logged in
         if (sessionStorage.getItem('splash_skip')) {
             sessionStorage.removeItem('splash_skip');
-            const s = document.getElementById('splash-screen');
-            if (s) s.remove();
+            document.getElementById('splash-screen')?.remove();
+        } else if (localStorage.getItem('auth_user') && sessionStorage.getItem('uniapp_session_pulled')) {
+            document.getElementById('splash-screen')?.remove();
         }
 
         function dismissSplash() {

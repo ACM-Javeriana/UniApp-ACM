@@ -60,18 +60,45 @@ def signup():
 
 @api_bp.route('/auth/signin', methods=['POST'])
 def signin():
-    """Sign in existing user"""
+    """Sign in existing user, bundling cloud data pull into the same request"""
     data = request.get_json()
     email = data.get('email')
     password = data.get('password')
-    
+
     if not email or not password:
         return jsonify({'error': 'Email and password required'}), 400
-    
+
     result = DatabaseService.sign_in(email, password)
     if 'error' in result:
         return jsonify(result), 401
-    
+
+    user_id = result.get('user', {}).get('id')
+    access_token = result.get('session', {}).get('access_token')
+
+    if user_id and access_token:
+        fetchers = {
+            'pensum':         lambda: DatabaseService.get_pensum(user_id, access_token),
+            'clases':         lambda: DatabaseService.get_clases(user_id, access_token),
+            'configuracion':  lambda: DatabaseService.get_configuracion(user_id, access_token),
+            'calificaciones': lambda: DatabaseService.get_calificaciones(user_id, access_token),
+            'franjas':        lambda: DatabaseService.get_franjas(user_id, access_token),
+        }
+        cloud = {}
+        updated_at = {}
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = {executor.submit(fn): key for key, fn in fetchers.items()}
+            for future in as_completed(futures):
+                key = futures[future]
+                fetch_result = future.result()
+                if fetch_result.get('data') is not None:
+                    cloud[key] = fetch_result['data']
+                if fetch_result.get('updated_at'):
+                    updated_at[key] = fetch_result['updated_at']
+        if updated_at:
+            cloud['_updated_at'] = updated_at
+            cloud['_latest_updated_at'] = max(updated_at.values())
+        result['cloud_data'] = cloud
+
     return jsonify(result)
 
 
