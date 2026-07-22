@@ -292,6 +292,13 @@
     </div>
 
     <script>
+        // Skip splash instantly if returning from a cloud-data reload
+        if (sessionStorage.getItem('splash_skip')) {
+            sessionStorage.removeItem('splash_skip');
+            const s = document.getElementById('splash-screen');
+            if (s) s.remove();
+        }
+
         function dismissSplash() {
             const splash = document.getElementById('splash-screen');
             if (!splash) return;

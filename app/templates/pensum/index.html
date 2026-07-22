@@ -5789,6 +5789,7 @@
     // ─── Welcome Modal ───
 
     function initOnboarding() {
+        if (document.getElementById('splash-screen')) return;
         if (localStorage.getItem(TOUR_SEEN_KEY)) return;
         const materias = storage.getMaterias ? storage.getMaterias() : [];
         if (materias.length > 0) return;

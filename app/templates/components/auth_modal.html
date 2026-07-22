@@ -135,6 +135,21 @@
 </div>
 
 <script>
+function showSplashLoading(text) {
+    const btn = document.getElementById('splash-btn');
+    if (btn) btn.style.display = 'none';
+    const container = document.querySelector('#splash-screen .relative.z-10');
+    if (!container) return;
+    let el = document.getElementById('splash-loading-text');
+    if (!el) {
+        el = document.createElement('p');
+        el.id = 'splash-loading-text';
+        el.style.cssText = 'font-family: Montserrat, sans-serif; font-size: 0.75rem; font-weight: 500; color: rgba(0,8,27,0.45); margin-top: 1.25rem; letter-spacing: 0.08em;';
+        container.appendChild(el);
+    }
+    el.textContent = text;
+}
+
 // Auth state
 let currentUser = null;
 let authSession = null;
@@ -271,15 +286,14 @@ document.getElementById('signin-form').addEventListener('submit', async function
         // Update UI
         updateAuthUI(true, data.user.email);
         closeAuthModal();
-        if (typeof dismissSplash === 'function') dismissSplash();
-
-        if (typeof App !== 'undefined' && App.showAlert) {
-            App.showAlert('¡Bienvenido!', 'success');
-        }
+        showSplashLoading('Cargando tus datos…');
 
         // Wipe previous user's local data before loading this user's cloud data
         clearLocalAppData();
         await pullFromCloud();
+
+        // If pullFromCloud didn't reload (no cloud data), dismiss splash now
+        if (typeof dismissSplash === 'function') dismissSplash();
         
     } catch (error) {
         showError('signin', error.message);
@@ -450,12 +464,13 @@ function clearAuthData() {
     localStorage.removeItem('auth_session');
 }
 
-// Clear all local app data (uniapp_* keys)
+// Clear all local app data (uniapp_* keys), preserving device-level flags
 function clearLocalAppData() {
+    const preserve = new Set(['uniapp_tutorial_seen']);
     const keys = [];
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.startsWith('uniapp_')) keys.push(key);
+        if (key && key.startsWith('uniapp_') && !preserve.has(key)) keys.push(key);
     }
     keys.forEach(k => localStorage.removeItem(k));
 }
@@ -792,7 +807,8 @@ async function pullFromCloud() {
 
             markCloudSyncTimestamp(cloudUpdatedAt);
             
-            // Reload page to reflect changes
+            // Reload page to reflect changes — skip splash on return
+            sessionStorage.setItem('splash_skip', '1');
             window.location.reload();
         }
         
