@@ -49,6 +49,9 @@ const App = {
         const userInfo = document.getElementById('userInfo');
         const syncStatus = document.getElementById('syncStatus');
         if (user) {
+            if (typeof dismissSplash === 'function' && document.getElementById('splash-screen')) {
+                setTimeout(dismissSplash, 300);
+            }
             if (authButton) {
                 authButton.textContent = 'Cerrar Sesión';
                 authButton.onclick = () => this.logout();
@@ -140,6 +143,7 @@ const App = {
         if (result.success) {
             this.hideAuthModal();
             this.showAlert('¡Bienvenido!', 'success');
+            if (typeof dismissSplash === 'function') dismissSplash();
         } else {
             if (errorEl) errorEl.textContent = result.error;
         }
@@ -176,6 +180,7 @@ const App = {
         if (result.success) {
             this.hideAuthModal();
             this.showAlert(result.message || 'Cuenta creada correctamente', 'success');
+            if (typeof dismissSplash === 'function') dismissSplash();
         } else {
             if (errorEl) errorEl.textContent = result.error;
         }

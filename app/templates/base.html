@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
+    {% if supabase_url %}
+    <meta name="supabase-url" content="{{ supabase_url }}">
+    <meta name="supabase-key" content="{{ supabase_key }}">
+    {% endif %}
     <title>{% block title %}UniApp{% endblock %}</title>
 
     <!-- Theme initialization (prevent FOUC) -->
@@ -274,35 +278,35 @@
                 De Javerianos para Javerianos
             </p>
 
-            <!-- Botón -->
+            <!-- Botón principal -->
             <button id="splash-btn"
-                    onclick="dismissSplash()"
+                    onclick="splashShowAuth()"
                     class="focus:outline-none"
-                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.875rem; letter-spacing: 0.06em; padding: 0.75rem 3rem; border-radius: 0.75rem; background: #004af5; border: none; color: #ffffff; transition: background 0.2s; min-width: 200px;"
+                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.875rem; letter-spacing: 0.06em; padding: 0.75rem 3rem; border-radius: 0.75rem; background: #004af5; border: none; color: #ffffff; transition: background 0.2s; min-width: 200px; cursor: pointer;"
                     onmouseover="this.style.background='#022983'"
                     onmouseout="this.style.background='#004af5'">
                 Entrar
             </button>
 
-            <p style="margin-top: 0.75rem; font-size: 0.68rem; color: rgba(0,8,27,0.25); font-family: 'Montserrat', sans-serif;">
-                Presiona Enter para continuar
-            </p>
         </div>
     </div>
 
     <script>
         function dismissSplash() {
             const splash = document.getElementById('splash-screen');
+            if (!splash) return;
             splash.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             splash.style.opacity = '0';
             splash.style.transform = 'scale(1.03)';
             setTimeout(() => splash.remove(), 400);
         }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && document.getElementById('splash-screen')) {
-                dismissSplash();
+        function splashShowAuth() {
+            const modal = document.getElementById('authModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                if (typeof App !== 'undefined') App.switchAuthTab('login');
             }
-        });
+        }
     </script>
 
     <!-- Main content -->
