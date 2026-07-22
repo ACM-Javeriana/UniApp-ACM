@@ -1443,7 +1443,7 @@ select:disabled {
 
 /* ─── Tour / Onboarding ─── */
 .tour-highlight {
-    box-shadow: 0 0 0 3px #5091AF, 0 0 0 7px rgba(80, 145, 175, 0.22) !important;
+    box-shadow: 0 0 0 3px #004af5, 0 0 0 7px rgba(0, 74, 245, 0.22) !important;
     border-radius: 0.75rem !important;
     transition: box-shadow 0.2s ease !important;
 }
