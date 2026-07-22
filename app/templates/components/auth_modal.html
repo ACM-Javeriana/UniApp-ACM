@@ -5,16 +5,24 @@
         <div class="fixed inset-0 transition-opacity bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80" onclick="closeAuthModal()"></div>
         
         <!-- Modal panel -->
-        <div class="relative inline-block w-full max-w-md p-4 sm:p-6 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-gray-800 rounded-xl shadow-xl max-h-[calc(100dvh-1.5rem)] overflow-y-auto">
+        <div class="relative inline-block w-full max-w-md p-4 sm:p-6 overflow-hidden text-left align-middle transition-all transform rounded-xl shadow-xl max-h-[calc(100dvh-1.5rem)] overflow-y-auto" style="background-color: var(--modal-bg);">
             <!-- Close button -->
-            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 transition-colors" style="color: var(--text-muted);" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-muted)'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
             </button>
-            
+
+            <!-- ACM Logo header -->
+            <div class="flex flex-col items-center mb-5 pt-1">
+                <img src="/static/img/acm-logo.png"
+                     alt="ACM Capítulo Javeriano"
+                     class="acm-logo-modal">
+                <p class="text-xs mt-2" style="color: var(--text-tertiary);">Accede a tu espacio académico</p>
+            </div>
+
             <!-- Tabs -->
-            <div class="flex gap-3 border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto">
+            <div class="flex gap-3 mb-6 overflow-x-auto" style="border-bottom: 1px solid var(--border-primary);">
                 <button id="tab-signin" onclick="switchAuthTab('signin')" 
                         class="pb-2 px-1 text-sm font-medium border-b-2 border-accent-500 text-accent-600 dark:text-accent-400 whitespace-nowrap">
                     Iniciar sesión

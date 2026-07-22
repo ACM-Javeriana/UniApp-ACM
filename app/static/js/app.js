@@ -48,9 +48,7 @@ const App = {
         const authButton = document.getElementById('authButton');
         const userInfo = document.getElementById('userInfo');
         const syncStatus = document.getElementById('syncStatus');
-        
         if (user) {
-            // User is logged in
             if (authButton) {
                 authButton.textContent = 'Cerrar Sesión';
                 authButton.onclick = () => this.logout();
@@ -64,7 +62,6 @@ const App = {
                 syncStatus.innerHTML = '<span class="text-green-500">●</span> Sincronizado';
             }
         } else {
-            // User is logged out
             if (authButton) {
                 authButton.textContent = 'Iniciar Sesión';
                 authButton.onclick = () => this.showAuthModal();
@@ -216,7 +213,7 @@ const App = {
                 }
             });
         });
-        
+
         // Close modals on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {

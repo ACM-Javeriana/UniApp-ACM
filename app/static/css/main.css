@@ -6,16 +6,16 @@
 /* ==================== CSS Variables ==================== */
 :root {
     /* Accent Colors */
-    --color-accent: #5091AF;
-    --color-accent-dark: #3d7a94;
-    --color-accent-light: #6ba8c4;
-    --color-accent-bg: rgba(80, 145, 175, 0.1);
+    --color-accent: #004af5;
+    --color-accent-dark: #022983;
+    --color-accent-light: #3a75ff;
+    --color-accent-bg: rgba(0, 74, 245, 0.08);
     
     /* Background Colors */
     --bg-primary: #ffffff;
-    --bg-secondary: #f9fafb;
-    --bg-tertiary: #f3f4f6;
-    --bg-hover: #f3f4f6;
+    --bg-secondary: #f0f4fe;
+    --bg-tertiary: #e6edfd;
+    --bg-hover: #e6edfd;
     
     /* Text Colors */
     --text-primary: #111827;
@@ -83,16 +83,16 @@
 /* Dark Theme */
 [data-theme="dark"] {
     /* Accent Colors - slightly brighter for dark mode */
-    --color-accent: #6ba8c4;
-    --color-accent-dark: #5091AF;
-    --color-accent-light: #8dc6db;
-    --color-accent-bg: rgba(107, 168, 196, 0.15);
+    --color-accent: #3a75ff;
+    --color-accent-dark: #004af5;
+    --color-accent-light: #6b9aff;
+    --color-accent-bg: rgba(58, 117, 255, 0.15);
     
     /* Background Colors */
-    --bg-primary: #1f2937;
-    --bg-secondary: #111827;
-    --bg-tertiary: #374151;
-    --bg-hover: #374151;
+    --bg-primary: #0d1a35;
+    --bg-secondary: #060e1d;
+    --bg-tertiary: #162040;
+    --bg-hover: #1e2d50;
     
     /* Text Colors */
     --text-primary: #f9fafb;
@@ -101,9 +101,9 @@
     --text-muted: #6b7280;
     
     /* Border Colors */
-    --border-primary: #374151;
-    --border-secondary: #4b5563;
-    --border-light: #1f2937;
+    --border-primary: #1e3566;
+    --border-secondary: #2a4580;
+    --border-light: #0d1a35;
     
     /* Shadow - more subtle in dark mode */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -115,7 +115,7 @@
     --status-pending-border: #4b5563;
     --status-pending-text: #d1d5db;
     
-    --status-enrolled-bg: rgba(107, 168, 196, 0.2);
+    --status-enrolled-bg: rgba(58, 117, 255, 0.15);
     --status-enrolled-border: var(--color-accent);
     --status-enrolled-text: var(--color-accent);
     
@@ -132,17 +132,17 @@
     --status-dropped-text: #fde047;
     
     /* Component Colors */
-    --btn-secondary-bg: #374151;
+    --btn-secondary-bg: #1a2d56;
     --btn-secondary-text: #d1d5db;
-    --btn-secondary-hover: #4b5563;
-    
-    --modal-bg: #1f2937;
+    --btn-secondary-hover: #1e3566;
+
+    --modal-bg: #0d1a35;
     --tooltip-bg: #f9fafb;
     --tooltip-text: #1f2937;
-    
-    --scrollbar-track: #1f2937;
-    --scrollbar-thumb: #4b5563;
-    --scrollbar-thumb-hover: #6b7280;
+
+    --scrollbar-track: #060e1d;
+    --scrollbar-thumb: #1e3566;
+    --scrollbar-thumb-hover: #3a75ff;
     
     /* Franja Colors */
     --franja-blocked: rgba(239, 68, 68, 0.3);
@@ -166,10 +166,17 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: var(--text-primary);
     background-color: var(--bg-secondary);
+    background-image: linear-gradient(160deg, #f8faff 0%, #eef3ff 60%, #f0f4fe 100%);
+    background-attachment: fixed;
     transition: background-color 0.3s ease, color 0.3s ease;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] body {
+    background-image: linear-gradient(160deg, #06101f 0%, #060e1d 50%, #040a17 100%);
+    background-attachment: fixed;
 }
 
 * {
@@ -650,13 +657,13 @@ select:disabled {
 }
 
 [data-theme="dark"] .nav-root {
-    background-color: rgba(17, 24, 39, 0.9);
-    border-bottom-color: rgba(255, 255, 255, 0.05);
+    background-color: rgba(6, 14, 29, 0.92);
+    border-bottom-color: rgba(30, 53, 102, 0.6);
 }
 
 @supports (backdrop-filter: blur(12px)) {
     [data-theme="dark"] .nav-root {
-        background-color: rgba(17, 24, 39, 0.8);
+        background-color: rgba(6, 14, 29, 0.82);
     }
 }
 
@@ -664,48 +671,73 @@ select:disabled {
 .nav-brand {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.625rem;
     text-decoration: none;
-}
-
-.nav-brand-icon {
-    width: 1.75rem;
-    height: 1.75rem;
-    background-color: var(--color-accent);
-    border-radius: 0.45rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     flex-shrink: 0;
-    transition: background-color 0.15s;
-    box-shadow: 0 1px 3px rgba(80, 145, 175, 0.35);
+    opacity: 1;
+    transition: opacity 0.15s;
 }
 
-.nav-brand-icon svg {
-    width: 1rem;
-    height: 1rem;
-    color: #ffffff;
-    stroke: #ffffff;
+.nav-brand:hover {
+    opacity: 0.82;
 }
 
-.nav-brand:hover .nav-brand-icon {
-    background-color: var(--color-accent-dark);
+.nav-brand-divider {
+    display: block;
+    width: 1px;
+    height: 1.5rem;
+    background-color: var(--border-secondary);
+    flex-shrink: 0;
 }
 
 .nav-brand-text {
-    font-size: 0.9375rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.01em;
     color: var(--text-primary);
     white-space: nowrap;
 }
 
 .nav-brand-text span {
     color: var(--color-accent);
+    font-weight: 800;
 }
 
 [data-theme="dark"] .nav-brand-text {
-    color: #f9fafb;
+    color: #f0f4fe;
+}
+
+/* ACM logo — PNG has transparent background, dark mode inverts to white */
+.acm-logo-nav {
+    height: 3rem;
+    width: auto;
+    display: block;
+}
+
+.acm-logo-footer {
+    height: 1.625rem;
+    width: auto;
+    display: block;
+}
+
+.acm-logo-modal {
+    height: 3rem;
+    width: auto;
+    display: block;
+}
+
+[data-theme="dark"] .acm-logo-nav,
+[data-theme="dark"] .acm-logo-footer,
+[data-theme="dark"] .acm-logo-modal {
+    filter: brightness(0) invert(1);
+}
+
+/* Footer with brand colors */
+.app-footer {
+    background-color: var(--bg-primary);
+    border-top: 1px solid var(--border-light);
+    margin-top: auto;
 }
 
 /* Nav links */
@@ -848,12 +880,12 @@ select:disabled {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
+    background-color: #3a75ff;
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--scrollbar-thumb-hover);
+    background-color: #004af5;
 }
 
 /* ==================== Responsive Utilities ==================== */
