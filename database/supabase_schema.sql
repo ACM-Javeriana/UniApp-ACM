@@ -140,13 +140,36 @@ CREATE POLICY "Users can delete own franjas" ON franjas
     FOR DELETE USING (auth.uid() = user_id);
 
 -- =============================================
--- 6. INDEXES FOR PERFORMANCE
+-- 6. ERRORS TABLE (stores user-submitted problem reports)
+-- =============================================
+CREATE TABLE IF NOT EXISTS errors (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    message TEXT NOT NULL,
+    steps TEXT,
+    diagnostics JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE errors ENABLE ROW LEVEL SECURITY;
+
+-- Anyone can report an error (even anonymous users)
+CREATE POLICY "Anyone can report an error" ON errors
+    FOR INSERT WITH CHECK (true);
+
+-- Only authenticated users can view error reports
+CREATE POLICY "Authenticated users can view errors" ON errors
+    FOR SELECT USING (auth.role() = 'authenticated');
+
+-- =============================================
+-- 7. INDEXES FOR PERFORMANCE
 -- =============================================
 CREATE INDEX IF NOT EXISTS idx_pensums_user_id ON pensums(user_id);
 CREATE INDEX IF NOT EXISTS idx_clases_user_id ON clases(user_id);
 CREATE INDEX IF NOT EXISTS idx_calificaciones_user_id ON calificaciones(user_id);
 CREATE INDEX IF NOT EXISTS idx_configuraciones_user_id ON configuraciones(user_id);
 CREATE INDEX IF NOT EXISTS idx_franjas_user_id ON franjas(user_id);
+CREATE INDEX IF NOT EXISTS idx_errors_created_at ON errors(created_at DESC);
 
 -- =============================================
 -- 7. UPDATED_AT TRIGGER FUNCTION

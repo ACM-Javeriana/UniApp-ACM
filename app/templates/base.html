@@ -387,8 +387,8 @@
                         class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/[0.06] rounded-lg transition-colors">
                     Cancelar
                 </button>
-                <button onclick="copyBugReport()"
-                        class="flex-1 py-2 text-sm font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors">
+                <button onclick="submitBugReport()"
+                        class="flex-1 py-2 text-sm font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors disabled:opacity-50">
                     Enviar
                 </button>
             </div>
@@ -490,43 +490,37 @@
         function closeBugReport() {
             document.getElementById('bug-report-modal').classList.add('hidden');
         }
-        function buildReportText () {
+        async function submitBugReport() {
             const desc = document.getElementById('bug-description').value.trim();
             const steps = document.getElementById('bug-steps').value.trim();
             const d = collectDiagnostics();
-            if (!desc) {App.showAlert('Describe el problema antes de generar reporte', 'warning'); return null;}
+            if (!desc) {App.showAlert('Describe el problema antes de generar reporte', 'warning'); return;}
 
-            return [
-                '## Descripción del problema',
-            desc,
-            '',
-            steps ? '## Pasos para reproducir' : '',
-            steps || '',
-            '',
-            '## Informacion del sistema',
-            `- **Página**: \`${d.page}\``,
-            `- **Navegador**: ${d.browser}`,
-            `- **Versión**: \`${d.version}\``,
-            `- **Tema**: ${d.theme}`,
-            `- **Sesión activa**: ${d.isAuth}`,
-            '',
-            '## Diagnóstico',
-            `- Materias registradas: ${d.materias}`,
-            `- Clases de horario: ${d.clases}`,
-            `- Semestre configurado: ${d.semestre}`,
-        ].filter(l => l !== null).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+            const btn = document.querySelector('#bug-report-modal button:last-child');
+            const orig = btn.textContent;
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
 
-     }
-     function copyBugReport() {
-        const text = buildReportText();
-        if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
-            closeBugReport();
-            App.showAlert({ title: 'Reporte copiado', detail: 'Pégalo en un issue de GitHub o donde necesites.' }, 'success');
-        }).catch(() => {
-            App.showAlert({ title: 'No se pudo copiar', detail: 'Intenta de nuevo o copia el texto manualmente.' }, 'error');
-        });
-     }
+            try {
+                const res = await fetch('/api/errors/report', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        message: desc,
+                        steps: steps || undefined,
+                        diagnostics: d,
+                    }),
+                });
+                if (!res.ok) throw new Error(await res.text());
+                closeBugReport();
+                App.showAlert({ title: 'Reporte enviado', detail: 'Gracias por tu ayuda. Revisaremos el problema pronto.' }, 'success');
+            } catch (e) {
+                App.showAlert({ title: 'Error al enviar', detail: 'No se pudo enviar el reporte. Intenta de nuevo más tarde.' }, 'error');
+            } finally {
+                btn.textContent = orig;
+                btn.disabled = false;
+            }
+        }
      document.getElementById('bug-report-modal').addEventListener('click', function(e) {
         if(e.target === this) closeBugReport();
      });
